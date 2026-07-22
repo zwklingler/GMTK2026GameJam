@@ -11,11 +11,11 @@ public class PlayerMovement : MonoBehaviour
     InputAction upAction;
     InputAction turnAction;
 
-    Rigidbody2D rigidbody;
+    Rigidbody rigidbody;
 
     void Awake()
     {
-        rigidbody = GetComponent<Rigidbody2D>();
+        rigidbody = GetComponent<Rigidbody>();
 
         upAction = InputSystem.actions.FindAction("Up");
         turnAction = InputSystem.actions.FindAction("Turn");
@@ -35,11 +35,11 @@ public class PlayerMovement : MonoBehaviour
     void Move()
     {
         fuel = Mathf.Max(0, fuel - fuelUseSpeed * Time.fixedDeltaTime);
-        rigidbody.AddRelativeForce(Vector3.up * moveSpeed * Time.fixedDeltaTime, ForceMode2D.Force);
+        rigidbody.AddRelativeForce(Vector3.forward * moveSpeed * Time.fixedDeltaTime, ForceMode.Acceleration);
     }
 
     void Turn(float turnDelta)
     {
-        transform.Rotate(Vector3.forward * -turnDelta * turnSpeed * Time.fixedDeltaTime);
+        transform.Rotate(Vector3.right * turnDelta * turnSpeed * Time.fixedDeltaTime);
     }
 }

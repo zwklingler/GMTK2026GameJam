@@ -3,6 +3,7 @@ using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -29,6 +30,20 @@ public class GameManager : MonoBehaviour
 
     [Tooltip("Filled image to display percentage of fuel remaining")]
     [SerializeField] Image fuelBarFill;
+
+    [Header("Points UI")]
+    [Tooltip("Text showing the player points")]
+    [SerializeField] TMP_Text pointsText;
+
+    [Tooltip("Points earned per unit of height")]
+    [SerializeField] float pointsPerHeight = 1f;
+
+    [Header("Countdown UI")]
+    [Tooltip("Text for the launch countdown")]
+    [SerializeField] TMP_Text countdownText;
+
+    [Tooltip("Seconds the blastoff message stays on screen after the count ends")]
+    [SerializeField] float blastoffMessageTime = 1f;
 
     [Header("Asteroids")]
     [SerializeField] GameObject asteroidPrefab;
@@ -169,6 +184,13 @@ public class GameManager : MonoBehaviour
     bool shopping = true;
     InputAction upAction;
 
+    public int Points { get; private set; }
+
+    // Highest point reached on this life
+    float runMaxHeight;
+
+    float pointsCarry;
+
     readonly List<GameObject> activeAsteroids = new List<GameObject>();
     float spawnTimer;
 
@@ -206,19 +228,27 @@ public class GameManager : MonoBehaviour
         shipStartPosition = playerMovement.transform.position;
         shipStartRotation = playerMovement.transform.rotation;
 
+        runMaxHeight = shipStartPosition.y;
+
         playerMovement.enabled = false;
         shopping = true;
+
+        if(countdownText != null)
+            countdownText.gameObject.SetActive(false);
     }
 
     void Update()
     {
         UpdateFuelUI();
+        UpdatePointsUI();
 
         if(shopping)
             return;
 
         Vector3 shipPosition = playerMovement.transform.position;
         float shipHeight = shipPosition.y;
+
+        TrackHeightPoints(shipHeight);
 
         if(shipHeight >= asteroidStartHeight)
         {
@@ -282,15 +312,33 @@ public class GameManager : MonoBehaviour
 
     async Awaitable Countdown(int time)
     {
+        if(countdownText != null)
+            countdownText.gameObject.SetActive(true);
+
         for(int i = time; i > 0; i--)
         {
-            //TODO display numbers
+            if(countdownText != null)
+                countdownText.text = i.ToString();
+
             Debug.Log(i);
 
             await Awaitable.WaitForSecondsAsync(1);
         }
 
-        //TODO display blastoff or something
+        if(countdownText != null)
+        {
+            countdownText.text = "BLAST OFF!";
+
+            HideCountdownAfter(blastoffMessageTime);
+        }
+    }
+
+    async void HideCountdownAfter(float seconds)
+    {
+        await Awaitable.WaitForSecondsAsync(seconds);
+
+        if(countdownText != null)
+            countdownText.gameObject.SetActive(false);
     }
 
     public void CrashRocket()
@@ -308,6 +356,9 @@ public class GameManager : MonoBehaviour
         satelliteSpawnTimer = 0f;
         ufoSpawnTimer = 0f;
 
+        runMaxHeight = shipStartPosition.y;
+        pointsCarry = 0f;
+
         playerMovement.enabled = false;
         playerMovement.ResetShip(shipStartPosition, shipStartRotation);
 
@@ -317,6 +368,38 @@ public class GameManager : MonoBehaviour
 
         camera.Follow = cameraShopFocus;
         shopUI.SetActive(true);
+    }
+
+    void TrackHeightPoints(float shipHeight)
+    {
+        if(shipHeight <= runMaxHeight)
+            return;
+
+        pointsCarry += (shipHeight - runMaxHeight) * pointsPerHeight;
+        runMaxHeight = shipHeight;
+
+        int earned = Mathf.FloorToInt(pointsCarry);
+
+        if(earned > 0)
+        {
+            Points += earned;
+            pointsCarry -= earned;
+        }
+    }
+
+    public bool SpendPoints(int amount)
+    {
+        if(amount <= 0 || Points < amount)
+            return false;
+
+        Points -= amount;
+        return true;
+    }
+
+    void UpdatePointsUI()
+    {
+        if(pointsText != null)
+            pointsText.text = Points.ToString();
     }
 
     void UpdateFuelUI()

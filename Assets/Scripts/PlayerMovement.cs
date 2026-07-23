@@ -35,7 +35,7 @@ public class PlayerMovement : MonoBehaviour
     void Move()
     {
         fuel = Mathf.Max(0, fuel - fuelUseSpeed * Time.fixedDeltaTime);
-        rigidbody.AddRelativeForce(Vector3.forward * moveSpeed * Time.fixedDeltaTime, ForceMode.Acceleration);
+        rigidbody.AddRelativeForce(Vector3.up * moveSpeed * Time.fixedDeltaTime, ForceMode.Acceleration);
     }
 
     void Turn(float turnDelta)

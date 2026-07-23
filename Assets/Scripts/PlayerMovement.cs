@@ -7,12 +7,22 @@ public class PlayerMovement : MonoBehaviour
 
     public float maxFuel;
 
-    public float fuelUseSpeed;
+    public float fuelUseSpeed = 1f;
     public float turnSpeed;
     public float moveSpeed;
 
     [Tooltip("Top speed in units per second. Set to 0 for no limit.")]
     public float maxSpeed = 30f;
+
+    [Header("Gravity")]
+    [Tooltip("Gravity strength at initial height")]
+    public float baseGravity = 9.81f;
+
+    [Tooltip("Gravity at height")]
+    public float gravityFullHeight = 0f;
+
+    [Tooltip("Height which gravity would be gravityFullHeight")]
+    public float gravityAtHeight = 500f;
 
     [Header("Flame Trail")]
     [Tooltip("Engine flame/smoke systems. Uncheck 'Play On Awake' on each.")]
@@ -59,6 +69,8 @@ public class PlayerMovement : MonoBehaviour
 
         rigidbody.constraints |= RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY;
 
+        rigidbody.useGravity = false;
+
         upAction = InputSystem.actions.FindAction("Up");
         turnAction = InputSystem.actions.FindAction("Turn");
 
@@ -91,6 +103,8 @@ public class PlayerMovement : MonoBehaviour
         if (isThrusting)
             Move();
 
+        ApplyGravity();
+
         ClampSpeed();
 
         SetFlame(isThrusting);
@@ -116,6 +130,21 @@ public class PlayerMovement : MonoBehaviour
     {
         fuel = Mathf.Max(0, fuel - fuelUseSpeed * Time.fixedDeltaTime);
         rigidbody.AddRelativeForce(Vector3.up * moveSpeed * Time.fixedDeltaTime, ForceMode.Acceleration);
+    }
+    void ApplyGravity()
+    {
+        float heightRatio = Mathf.InverseLerp(gravityFullHeight, gravityAtHeight, transform.position.y);
+        float gravity = Mathf.Lerp(baseGravity, 0f, heightRatio);
+
+        if (gravity <= 0f)
+            return;
+
+        rigidbody.AddForce(Vector3.down * gravity, ForceMode.Acceleration);
+    }
+
+    public float GetGravityFraction()
+    {
+        return 1f - Mathf.InverseLerp(gravityFullHeight, gravityAtHeight, transform.position.y);
     }
 
     void ClampSpeed()

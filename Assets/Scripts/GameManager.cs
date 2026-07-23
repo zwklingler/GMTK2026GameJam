@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -22,6 +23,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] CinemachineCamera camera;
     [SerializeField] Transform cameraShopFocus;
     [SerializeField] GameObject shopUI;
+
+    [Header("Fuel UI")]
+    [SerializeField] GameObject fuelUI;
+ 
+    [Tooltip("Filled image to display percentage of fuel remaining")]
+    [SerializeField] Image fuelBarFill;
 
     [Header("Asteroids")]
     [SerializeField] GameObject asteroidPrefab;
@@ -159,6 +166,8 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        UpdateFuelUI();
+
         if(shopping)
             return;
 
@@ -248,6 +257,17 @@ public class GameManager : MonoBehaviour
 
         camera.Follow = cameraShopFocus;
         shopUI.SetActive(true);
+    }
+
+    void UpdateFuelUI()
+    {
+        float ratio = playerMovement.maxFuel > 0f ? Mathf.Clamp01(playerMovement.fuel / playerMovement.maxFuel) : 0f;
+ 
+        if(fuelBarFill != null)
+        {
+            fuelBarFill.fillAmount = ratio;
+        }
+ 
     }
 
     void SpawnAsteroid()

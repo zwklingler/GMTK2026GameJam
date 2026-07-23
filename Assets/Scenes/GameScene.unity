@@ -344,7 +344,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -8, z: 0}
-  m_LocalScale: {x: 100, y: 1, z: 1}
+  m_LocalScale: {x: 10000, y: 1, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1290,13 +1290,30 @@ MonoBehaviour:
   asteroidPrefab: {fileID: 7863189245426074466, guid: 2444bfab207ef9f4b857bcb9498e22c6, type: 3}
   asteroidStartHeight: 200
   maxAsteroids: 8
-  spawnInterval: 0.6
+  spawnIntervalRange: {x: 0.3, y: 1.2}
   spawnHeightAboveShip: 40
-  spawnSpread: 15
-  spawnSpreadAxis: {x: 0, y: 0, z: 1}
+  spawnSpread: 25
+  asteroidSizeRange: {x: 1, y: 2}
   asteroidFallSpeed: {x: 3, y: 10}
   asteroidSpinSpeed: 2
   despawnDistanceBelowShip: 50
+  ufoPrefab: {fileID: 350762570792677931, guid: 7f3e1e213c3b3754a8beadf5ec2bbac0, type: 3}
+  ufoStartHeight: 200
+  maxUfos: 2
+  ufoSpawnIntervalRange: {x: 8, y: 16}
+  ufoHoverHeight: 25
+  ufoFormationSpread: 8
+  ufoFollowSpeed: 10
+  ufoVerticalSpeed: 12
+  ufoAlignThreshold: 3.5
+  ufoDiveDelay: 0.7
+  ufoDiveSpeed: 20
+  ufoDiveTrackSpeed: 4
+  ufoDiveDepthBelowShip: 15
+  ufoDiveMaxDuration: 3
+  ufoRecoverSpeed: 20
+  ufoSpawnSideOffset: 45
+  ufoDespawnDistanceBelowShip: 60
 --- !u!4 &1817475657
 Transform:
   m_ObjectHideFlags: 0
@@ -1339,7 +1356,7 @@ Transform:
   m_GameObject: {fileID: 1895874911}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -8.38, y: 8.2, z: -15}
+  m_LocalPosition: {x: -8.380001, y: 11.500001, z: -18}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1371,7 +1388,7 @@ MonoBehaviour:
     CustomLookAtTarget: 0
   Lens:
     FieldOfView: 60
-    OrthographicSize: 15
+    OrthographicSize: 18
     NearClipPlane: 0.3
     FarClipPlane: 1000
     Dutch: 0
@@ -1401,16 +1418,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 886251e9a18ece04ea8e61686c173e1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachinePositionComposer
-  CameraDistance: 15
+  CameraDistance: 18
   DeadZoneDepth: 0
   Composition:
-    ScreenPosition: {x: 0, y: 0.25}
+    ScreenPosition: {x: 0, y: 0.3}
     DeadZone:
-      Enabled: 0
+      Enabled: 1
       Size: {x: 0.2, y: 0.2}
     HardLimits:
       Enabled: 1
-      Size: {x: 0.5, y: 0.25}
+      Size: {x: 0.5, y: 0.2}
       Offset: {x: 0, y: 0}
   CenterOnActivate: 1
   TargetOffset: {x: 0, y: 0, z: 0}
@@ -1528,7 +1545,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 15
+  orthographic size: 18
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2

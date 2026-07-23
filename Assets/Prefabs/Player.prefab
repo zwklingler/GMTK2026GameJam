@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2521208103187670026}
   - component: {fileID: 3331301430651516253}
   - component: {fileID: 6795942522630566738}
+  - component: {fileID: 8902818915429709666}
   m_Layer: 0
   m_Name: Rocket2.0
   m_TagString: Untagged
@@ -93,6 +94,28 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &8902818915429709666
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1982647795699055472}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 1988216149656743765, guid: db477c571d1899c48b7c92c58535e994, type: 3}
 --- !u!1 &5607500124711166915
 GameObject:
   m_ObjectHideFlags: 0
@@ -104,7 +127,6 @@ GameObject:
   - component: {fileID: 6686814153073213823}
   - component: {fileID: 6385650568661620482}
   - component: {fileID: 2103196727290013038}
-  - component: {fileID: 4863703443024704637}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -166,30 +188,8 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 0
+  m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 120
   m_CollisionDetection: 2
---- !u!64 &4863703443024704637
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5607500124711166915}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 0}

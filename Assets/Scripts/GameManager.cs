@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] Transform cameraShopFocus;
     [SerializeField] GameObject shopUI;
     [SerializeField] PowerupSpawner powerupSpawner;
+    [SerializeField] BackgroundProps backgroundProps;
 
     [Header("Fuel UI")]
     [SerializeField] GameObject fuelUI;
@@ -430,6 +431,9 @@ public class GameManager : MonoBehaviour
 
         if(powerupSpawner != null)
             powerupSpawner.ResetRun();
+
+        if (backgroundProps != null)
+            backgroundProps.ResetRun();
 
         camera.Follow = cameraShopFocus;
         shopUI.SetActive(true);

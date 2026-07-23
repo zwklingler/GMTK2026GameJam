@@ -1679,6 +1679,7 @@ MonoBehaviour:
   cameraShopFocus: {fileID: 246511172}
   shopUI: {fileID: 1524547215}
   powerupSpawner: {fileID: 1817475658}
+  backgroundProps: {fileID: 2042611309}
   fuelUI: {fileID: 1757854626}
   fuelBarFill: {fileID: 357873288}
   pointsText: {fileID: 2051768543}
@@ -1712,14 +1713,14 @@ MonoBehaviour:
     baseCost: 100
     costMultiplier: 1.6
     maxLevel: 10
-    valuePerLevel: 0.3
+    valuePerLevel: 0.01
     button: {fileID: 1023870891}
     nameText: {fileID: 4457334}
     levelText: {fileID: 442816221}
     costText: {fileID: 761620790}
     level: 0
   asteroidPrefab: {fileID: 7863189245426074466, guid: 2444bfab207ef9f4b857bcb9498e22c6, type: 3}
-  asteroidStartHeight: 200
+  asteroidStartHeight: 450
   maxAsteroids: 8
   spawnIntervalRange: {x: 0.3, y: 2}
   spawnHeightAboveShip: 40
@@ -1730,11 +1731,11 @@ MonoBehaviour:
   asteroidSpinSpeed: 2
   despawnDistanceBelowShip: 50
   satellitePrefab: {fileID: 4353454036599994306, guid: bb760510ec8bc314184b85cae483030d, type: 3}
-  satelliteStartHeight: 50
+  satelliteStartHeight: 100
   maxSatellites: 3
-  satelliteSpawnIntervalRange: {x: 0.5, y: 6}
-  satelliteSpawnHeightRange: {x: 0, y: 40}
-  satelliteSpawnSideOffset: 50
+  satelliteSpawnIntervalRange: {x: 0.5, y: 4}
+  satelliteSpawnHeightRange: {x: 15, y: 40}
+  satelliteSpawnSideOffset: 40
   satelliteSpeedRange: {x: 5, y: 20}
   satelliteVerticalSpeed: 2
   satelliteSpinSpeedY: 5
@@ -1744,7 +1745,7 @@ MonoBehaviour:
   satelliteDespawnDistanceBelowShip: 60
   satelliteDespawnDistanceSideways: 140
   ufoPrefab: {fileID: 350762570792677931, guid: 7f3e1e213c3b3754a8beadf5ec2bbac0, type: 3}
-  ufoStartHeight: 200
+  ufoStartHeight: 800
   maxUfos: 2
   ufoSpawnIntervalRange: {x: 8, y: 16}
   ufoHoverHeight: 25
@@ -1793,8 +1794,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PowerupSpawner
   playerMovement: {fileID: 1969697855}
   powerupStartHeight: 100
-  powerupSpawnIntervalRange: {x: 10, y: 15}
-  basePowerupSpawnChance: 0.35
+  powerupSpawnIntervalRange: {x: 1, y: 1}
+  basePowerupSpawnChance: 0.03
   maxPowerups: 3
   powerupSpawnHeightAboveShip: 45
   powerupSpawnSpread: 22
@@ -1995,6 +1996,7 @@ GameObject:
   - component: {fileID: 2042611307}
   - component: {fileID: 2042611306}
   - component: {fileID: 2042611308}
+  - component: {fileID: 2042611309}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -2176,6 +2178,71 @@ MonoBehaviour:
   starsScrollSpeed: 0.1
   starsParallax: 0.1
   snapStarsToPixels: 1
+--- !u!114 &2042611309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2042611302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1536e83be788b6e4ab256e3b03069922, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BackgroundProps
+  rocket: {fileID: 2143049325}
+  propDistance: 100
+  horizontalRange: 40
+  verticalSpawnRange: {x: 45, y: 50}
+  despawnBelow: 90
+  spawnIntervalRange: {x: 1, y: 2}
+  maxPropsAlive: 8
+  driftSpeed: 0.3
+  props:
+  - name: Earth
+    sprite: {fileID: 21300000, guid: 0ceaee8b4765c51459b775de34372a5e, type: 3}
+    weight: 1
+    minHeight: 100
+    maxHeight: 300
+    sizeRange: {x: 60, y: 65}
+    maxAlive: 1
+    parallax: 0.9
+    overrideSpawnArea: 1
+    horizontalRange: {x: -40, y: -10}
+    verticalRange: {x: 45, y: 45}
+  - name: Black Hole
+    sprite: {fileID: 21300000, guid: ac200c54dbf3c204280e1293b8414ccd, type: 3}
+    weight: 1
+    minHeight: 1200
+    maxHeight: 1500
+    sizeRange: {x: 45, y: 60}
+    maxAlive: 1
+    parallax: 0.8
+    overrideSpawnArea: 0
+    horizontalRange: {x: -40, y: 40}
+    verticalRange: {x: 40, y: 80}
+  - name: Cloud1
+    sprite: {fileID: 21300000, guid: 29bbd18f08c78924c85518438274683a, type: 3}
+    weight: 1
+    minHeight: 0
+    maxHeight: 150
+    sizeRange: {x: 5, y: 15}
+    maxAlive: 5
+    parallax: 0.1
+    overrideSpawnArea: 1
+    horizontalRange: {x: -40, y: 40}
+    verticalRange: {x: 45, y: 120}
+  - name: Cloud2
+    sprite: {fileID: 21300000, guid: d0246ebf423da6145a99c3a7b68bdf21, type: 3}
+    weight: 1
+    minHeight: 0
+    maxHeight: 150
+    sizeRange: {x: 5, y: 15}
+    maxAlive: 5
+    parallax: 0.1
+    overrideSpawnArea: 1
+    horizontalRange: {x: -40, y: 40}
+    verticalRange: {x: 45, y: 120}
 --- !u!1 &2051768541
 GameObject:
   m_ObjectHideFlags: 0
@@ -2445,7 +2512,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2103196727290013038, guid: b88547eaebcf10941b0652f5e0925c0a, type: 3}
       propertyPath: m_UseGravity
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2103196727290013038, guid: b88547eaebcf10941b0652f5e0925c0a, type: 3}
       propertyPath: m_Constraints

@@ -4,12 +4,15 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
     public float fuel;
+
+    public float maxFuel;
+
     public float fuelUseSpeed;
     public float turnSpeed;
     public float moveSpeed;
 
     [Header("Flame Trail")]
-    [Tooltip("Engine flame/smoke systems")]
+    [Tooltip("Engine flame/smoke systems. Uncheck 'Play On Awake' on each.")]
     [SerializeField] private ParticleSystem[] flameSystems;
 
     [Tooltip("On = particles vanish instantly. Off = they fade out naturally.")]
@@ -26,9 +29,19 @@ public class PlayerMovement : MonoBehaviour
     {
         rigidbody = GetComponent<Rigidbody>();
 
+        rigidbody.constraints |= RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY;
+
         upAction = InputSystem.actions.FindAction("Up");
         turnAction = InputSystem.actions.FindAction("Turn");
 
+        if (maxFuel <= 0f)
+            maxFuel = fuel;
+
+        SetFlame(false);
+    }
+
+    void OnDisable()
+    {
         SetFlame(false);
     }
 
@@ -47,6 +60,12 @@ public class PlayerMovement : MonoBehaviour
             Turn(turnDelta);
     }
 
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Asteroid"))
+            GameManager.instance.CrashRocket();
+    }
+
     void Move()
     {
         fuel = Mathf.Max(0, fuel - fuelUseSpeed * Time.fixedDeltaTime);
@@ -56,6 +75,18 @@ public class PlayerMovement : MonoBehaviour
     void Turn(float turnDelta)
     {
         transform.Rotate(Vector3.right * turnDelta * turnSpeed * Time.fixedDeltaTime);
+    }
+
+    public void ResetShip(Vector3 position, Quaternion rotation)
+    {
+        rigidbody.linearVelocity = Vector3.zero;
+        rigidbody.angularVelocity = Vector3.zero;
+
+        transform.SetPositionAndRotation(position, rotation);
+
+        fuel = maxFuel;
+
+        SetFlame(false);
     }
 
     void SetFlame(bool on)

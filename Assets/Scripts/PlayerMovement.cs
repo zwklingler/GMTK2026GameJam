@@ -8,10 +8,19 @@ public class PlayerMovement : MonoBehaviour
     public float turnSpeed;
     public float moveSpeed;
 
+    [Header("Flame Trail")]
+    [Tooltip("Engine flame/smoke systems")]
+    [SerializeField] private ParticleSystem[] flameSystems;
+
+    [Tooltip("On = particles vanish instantly. Off = they fade out naturally.")]
+    [SerializeField] private bool clearFlameInstantly = false;
+
     InputAction upAction;
     InputAction turnAction;
 
     Rigidbody rigidbody;
+
+    bool flameOn;
 
     void Awake()
     {
@@ -19,12 +28,18 @@ public class PlayerMovement : MonoBehaviour
 
         upAction = InputSystem.actions.FindAction("Up");
         turnAction = InputSystem.actions.FindAction("Turn");
+
+        SetFlame(false);
     }
 
     void FixedUpdate()
     {
-        if (upAction.IsPressed() && fuel > 0)
+        bool isThrusting = upAction.IsPressed() && fuel > 0;
+
+        if (isThrusting)
             Move();
+
+        SetFlame(isThrusting);
 
         float turnDelta = turnAction.ReadValue<float>();
 
@@ -41,5 +56,23 @@ public class PlayerMovement : MonoBehaviour
     void Turn(float turnDelta)
     {
         transform.Rotate(Vector3.right * turnDelta * turnSpeed * Time.fixedDeltaTime);
+    }
+
+    void SetFlame(bool on)
+    {
+        if (on == flameOn) return;
+        flameOn = on;
+
+        var stopMode = clearFlameInstantly ? ParticleSystemStopBehavior.StopEmittingAndClear : ParticleSystemStopBehavior.StopEmitting;
+
+        foreach (var ps in flameSystems)
+        {
+            if (ps == null) continue;
+
+            if (on) 
+                ps.Play(true);
+            else 
+                ps.Stop(true, stopMode);
+        }
     }
 }

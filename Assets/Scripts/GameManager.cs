@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] CinemachineCamera camera;
     [SerializeField] Transform cameraShopFocus;
     [SerializeField] GameObject shopUI;
+    [SerializeField] PowerupSpawner powerupSpawner;
 
     [Header("Fuel UI")]
     [SerializeField] GameObject fuelUI;
@@ -85,7 +86,8 @@ public class GameManager : MonoBehaviour
     [Tooltip("Cuts fuel use per level")]
     [SerializeField] Upgrade fuelEfficiencyUpgrade;
 
-    //[SerializeField] Upgrade thirdUpgrade;
+    [Tooltip("Adds to the powerup spawn chance each level")]
+    [SerializeField] Upgrade powerupChanceUpgrade;
 
     [Header("Asteroids")]
     [SerializeField] GameObject asteroidPrefab;
@@ -282,7 +284,7 @@ public class GameManager : MonoBehaviour
 
         HookUpgradeButton(turnSpeedUpgrade);
         HookUpgradeButton(fuelEfficiencyUpgrade);
-        //HookUpgradeButton(thirdUpgrade);
+        HookUpgradeButton(powerupChanceUpgrade);
 
         ApplyUpgrades();
         RefreshShopUI();
@@ -339,6 +341,9 @@ public class GameManager : MonoBehaviour
                 ufoSpawnTimer = Random.Range(ufoSpawnIntervalRange.x, ufoSpawnIntervalRange.y);
             }
         }
+
+        if(powerupSpawner != null)
+            powerupSpawner.Tick(shipPosition);
 
         CullAsteroids(shipHeight);
         CullSatellites(shipPosition);
@@ -423,6 +428,9 @@ public class GameManager : MonoBehaviour
         ClearSatellites();
         ClearUfos();
 
+        if(powerupSpawner != null)
+            powerupSpawner.ResetRun();
+
         camera.Follow = cameraShopFocus;
         shopUI.SetActive(true);
 
@@ -444,6 +452,28 @@ public class GameManager : MonoBehaviour
             Points += earned;
             pointsCarry -= earned;
         }
+    }
+
+    public void CollectPowerup(GameObject powerupObject)
+    {
+        if(powerupSpawner != null)
+            powerupSpawner.Collect(powerupObject);
+    }
+
+    public void ClearAllObstacles()
+    {
+        ClearAsteroids();
+        ClearSatellites();
+        ClearUfos();
+    }
+
+    public void AddPoints(int amount)
+    {
+        if(amount <= 0)
+            return;
+
+        Points += amount;
+        UpdatePointsUI();
     }
 
     public bool SpendPoints(int amount)
@@ -489,15 +519,15 @@ public class GameManager : MonoBehaviour
 
         playerMovement.fuelUseSpeed = baseFuelUseSpeed * Mathf.Pow(1f - fuelEfficiencyUpgrade.valuePerLevel, fuelEfficiencyUpgrade.level);
 
-        // TODO placeholder
-        //playerMovement.moveSpeed = baseMoveSpeed + thirdUpgrade.level * thirdUpgrade.valuePerLevel;
+        if(powerupSpawner != null && powerupChanceUpgrade != null)
+            powerupSpawner.SpawnChanceBonus = powerupChanceUpgrade.level * powerupChanceUpgrade.valuePerLevel;
     }
 
     void RefreshShopUI()
     {
         RefreshUpgradeUI(turnSpeedUpgrade);
         RefreshUpgradeUI(fuelEfficiencyUpgrade);
-        //RefreshUpgradeUI(thirdUpgrade);
+        RefreshUpgradeUI(powerupChanceUpgrade);
     }
 
     void RefreshUpgradeUI(Upgrade upgrade)

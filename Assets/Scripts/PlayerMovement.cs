@@ -126,6 +126,12 @@ public class PlayerMovement : MonoBehaviour
             GameManager.instance.CrashRocket();
     }
 
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Powerup"))
+            GameManager.instance.CollectPowerup(other.gameObject);
+    }
+
     void Move()
     {
         fuel = Mathf.Max(0, fuel - fuelUseSpeed * Time.fixedDeltaTime);

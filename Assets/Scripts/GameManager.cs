@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Fuel UI")]
     [SerializeField] GameObject fuelUI;
- 
+
     [Tooltip("Filled image to display percentage of fuel remaining")]
     [SerializeField] Image fuelBarFill;
 
@@ -54,11 +54,54 @@ public class GameManager : MonoBehaviour
     [Tooltip("Random downward speed range")]
     [SerializeField] Vector2 asteroidFallSpeed = new Vector2(3f, 10f);
 
+    [Tooltip("Max sideways speed")]
+    [SerializeField] float asteroidHorizontalSpeed = 2f;
+
     [Tooltip("Max tumble speed on each axis")]
     [SerializeField] float asteroidSpinSpeed = 2f;
 
     [Tooltip("Asteroids this far below the ship get cleaned up")]
     [SerializeField] float despawnDistanceBelowShip = 50f;
+
+    [Header("Satellites")]
+    [SerializeField] GameObject satellitePrefab;
+
+    [Tooltip("Satellites start spawning at this height")]
+    [SerializeField] float satelliteStartHeight = 50f;
+
+    [Tooltip("Most satellites allowed alive at once")]
+    [SerializeField] int maxSatellites = 2;
+
+    [Tooltip("Random seconds between satellite spawns")]
+    [SerializeField] Vector2 satelliteSpawnIntervalRange = new Vector2(1f, 8f);
+    [Tooltip("How far above the ship they cross")]
+    [SerializeField] Vector2 satelliteSpawnHeightRange = new Vector2(30f, 70f);
+
+    [Tooltip("How far off to the side they enter from")]
+    [SerializeField] float satelliteSpawnSideOffset = 70f;
+
+    [Tooltip("Horizontal travel speed")]
+    [SerializeField] Vector2 satelliteSpeedRange = new Vector2(10f, 40f);
+
+    [Tooltip("Max vertical speed")]
+    [SerializeField] float satelliteVerticalSpeed = 2f;
+
+    [Tooltip("Max Y axis spin")]
+    [SerializeField] float satelliteSpinSpeedY = 1f;
+
+    [Tooltip("Random tilt on X axis")]
+    [SerializeField] float satelliteRotationRangeX = 20f;
+
+    [Tooltip("Random tilt on Y axis")]
+    [SerializeField] float satelliteRotationRangeY = 0f;
+
+    [Tooltip("Random tilt on Z axis")]
+    [SerializeField] float satelliteRotationRangeZ = 20f;
+
+    [Tooltip("Satellites below the ship get cleaned up")]
+    [SerializeField] float satelliteDespawnDistanceBelowShip = 60f;
+    [Tooltip("Satellites sideways from the ship get cleaned up")]
+    [SerializeField] float satelliteDespawnDistanceSideways = 140f;
 
     [Header("UFOs")]
     [SerializeField] GameObject ufoPrefab;
@@ -129,6 +172,9 @@ public class GameManager : MonoBehaviour
     readonly List<GameObject> activeAsteroids = new List<GameObject>();
     float spawnTimer;
 
+    readonly List<GameObject> activeSatellites = new List<GameObject>();
+    float satelliteSpawnTimer;
+
     enum UfoState
     {
         Chase, WindUp, Dive, Recover
@@ -185,6 +231,17 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        if(shipHeight >= satelliteStartHeight)
+        {
+            satelliteSpawnTimer -= Time.deltaTime;
+
+            if(satelliteSpawnTimer <= 0f)
+            {
+                SpawnSatellite(shipPosition);
+                satelliteSpawnTimer = Random.Range(satelliteSpawnIntervalRange.x, satelliteSpawnIntervalRange.y);
+            }
+        }
+
         if(shipHeight >= ufoStartHeight)
         {
             ufoSpawnTimer -= Time.deltaTime;
@@ -197,6 +254,7 @@ public class GameManager : MonoBehaviour
         }
 
         CullAsteroids(shipHeight);
+        CullSatellites(shipPosition);
         CullUfos(shipHeight);
     }
 
@@ -247,12 +305,14 @@ public class GameManager : MonoBehaviour
     {
         shopping = true;
         spawnTimer = 0f;
+        satelliteSpawnTimer = 0f;
         ufoSpawnTimer = 0f;
 
         playerMovement.enabled = false;
         playerMovement.ResetShip(shipStartPosition, shipStartRotation);
 
         ClearAsteroids();
+        ClearSatellites();
         ClearUfos();
 
         camera.Follow = cameraShopFocus;
@@ -262,12 +322,12 @@ public class GameManager : MonoBehaviour
     void UpdateFuelUI()
     {
         float ratio = playerMovement.maxFuel > 0f ? Mathf.Clamp01(playerMovement.fuel / playerMovement.maxFuel) : 0f;
- 
+
         if(fuelBarFill != null)
         {
             fuelBarFill.fillAmount = ratio;
         }
- 
+       
     }
 
     void SpawnAsteroid()
@@ -293,12 +353,43 @@ public class GameManager : MonoBehaviour
 
         if(asteroid.TryGetComponent(out Rigidbody body))
         {
-            body.linearVelocity = Vector3.down * Random.Range(asteroidFallSpeed.x, asteroidFallSpeed.y);
+            body.linearVelocity = new Vector3(Random.Range(-asteroidHorizontalSpeed, asteroidHorizontalSpeed), -Random.Range(asteroidFallSpeed.x, asteroidFallSpeed.y), 0f);
             body.angularVelocity = new Vector3(Random.Range(-asteroidSpinSpeed, asteroidSpinSpeed), Random.Range(-asteroidSpinSpeed, asteroidSpinSpeed), Random.Range(-asteroidSpinSpeed, asteroidSpinSpeed));
         }
 
         activeAsteroids.Add(asteroid);
     }
+
+    void SpawnSatellite(Vector3 shipPosition)
+    {
+        if(satellitePrefab == null)
+            return;
+
+        if(activeSatellites.Count >= maxSatellites)
+            return;
+        // Randomly decide which side to spawn on
+        float side = Random.value < 0.5f ? -1f : 1f;
+
+        Vector3 spawnPosition = new Vector3(shipPosition.x + side * satelliteSpawnSideOffset, shipPosition.y + Random.Range(satelliteSpawnHeightRange.x, satelliteSpawnHeightRange.y), 0f);
+
+        Vector3 tilt = new Vector3(Random.Range(-satelliteRotationRangeX, satelliteRotationRangeX), Random.Range(-satelliteRotationRangeY, satelliteRotationRangeY), Random.Range(-satelliteRotationRangeZ, satelliteRotationRangeZ));
+
+        Quaternion rotation = satellitePrefab.transform.rotation * Quaternion.Euler(tilt);
+
+        GameObject satellite = Instantiate(satellitePrefab, spawnPosition, rotation);
+
+        if(satellite.TryGetComponent(out Rigidbody body))
+        {
+            float speed = Random.Range(satelliteSpeedRange.x, satelliteSpeedRange.y);
+            body.linearVelocity = new Vector3(-side * speed, Random.Range(-satelliteVerticalSpeed, satelliteVerticalSpeed), 0f);
+            body.angularVelocity = new Vector3(0f, Random.Range(-satelliteSpinSpeedY, satelliteSpinSpeedY) * Mathf.Deg2Rad, 0f);
+            body.angularDamping = 0f;
+        }
+
+
+        activeSatellites.Add(satellite);
+    }
+    
 
     void SpawnUfo(Vector3 shipPosition)
     {
@@ -460,6 +551,31 @@ public class GameManager : MonoBehaviour
         return position;
     }
 
+    void CullSatellites(Vector3 shipPosition)
+    {
+        for(int i = activeSatellites.Count - 1; i >= 0; i--)
+        {
+            GameObject satellite =  activeSatellites[i];
+
+            if(satellite == null)
+            {
+                activeSatellites.RemoveAt(i);
+                continue;
+            }
+
+            Vector3 position = satellite.transform.position;
+
+            bool tooLow = position.y < shipPosition.y - satelliteDespawnDistanceBelowShip;
+            bool tooFarSideways = Mathf.Abs(position.x - shipPosition.x) > satelliteDespawnDistanceSideways;
+
+            if(tooLow || tooFarSideways)
+            {
+                Destroy(satellite);
+                activeSatellites.RemoveAt(i);
+            }
+        }
+    }
+
     void CullAsteroids(float shipHeight)
     {
         for(int i = activeAsteroids.Count - 1; i >= 0; i--)
@@ -498,6 +614,17 @@ public class GameManager : MonoBehaviour
                 activeUfos.RemoveAt(i);
             }
         }
+    }
+
+    void ClearSatellites()
+    {
+        foreach(GameObject satellite in activeSatellites)
+        {
+            if(satellite != null)
+                Destroy(satellite);
+        }
+
+        activeSatellites.Clear();
     }
 
     void ClearAsteroids()

@@ -1561,8 +1561,23 @@ MonoBehaviour:
   spawnSpread: 40
   asteroidSizeRange: {x: 1, y: 2}
   asteroidFallSpeed: {x: 3, y: 10}
+  asteroidHorizontalSpeed: 2
   asteroidSpinSpeed: 2
   despawnDistanceBelowShip: 50
+  satellitePrefab: {fileID: 4353454036599994306, guid: bb760510ec8bc314184b85cae483030d, type: 3}
+  satelliteStartHeight: 50
+  maxSatellites: 3
+  satelliteSpawnIntervalRange: {x: 0.5, y: 6}
+  satelliteSpawnHeightRange: {x: 0, y: 40}
+  satelliteSpawnSideOffset: 50
+  satelliteSpeedRange: {x: 5, y: 20}
+  satelliteVerticalSpeed: 2
+  satelliteSpinSpeedY: 5
+  satelliteRotationRangeX: 40
+  satelliteRotationRangeY: 0
+  satelliteRotationRangeZ: 40
+  satelliteDespawnDistanceBelowShip: 60
+  satelliteDespawnDistanceSideways: 140
   ufoPrefab: {fileID: 350762570792677931, guid: 7f3e1e213c3b3754a8beadf5ec2bbac0, type: 3}
   ufoStartHeight: 200
   maxUfos: 2

@@ -11,6 +11,9 @@ public class PlayerMovement : MonoBehaviour
     public float turnSpeed;
     public float moveSpeed;
 
+    [Tooltip("Top speed in units per second. Set to 0 for no limit.")]
+    public float maxSpeed = 30f;
+
     [Header("Flame Trail")]
     [Tooltip("Engine flame/smoke systems. Uncheck 'Play On Awake' on each.")]
     [SerializeField] private ParticleSystem[] flameSystems;
@@ -18,12 +21,37 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("On = particles vanish instantly. Off = they fade out naturally.")]
     [SerializeField] private bool clearFlameInstantly = false;
 
+    [Header("Rocket Wobble")]
+    [Tooltip("Transform for the mesh")]
+    [SerializeField] private Transform shipModel;
+
+    [Tooltip("Max wobble in degrees")]
+    [SerializeField] private float wobbleAngle = 10f;
+
+
+    [Tooltip("How much base rotation in the wobble")]
+    [SerializeField] private float wobbleAngleAtRest = 0.6f;
+
+    [Tooltip("How fast the base wobble happens")]
+    [SerializeField] private float wobbleSpeed = 10f;
+
+    [Tooltip("Wobble speed multiplier at max speed. 1 = no change with speed.")]
+    [SerializeField] private float wobbleSpeedAtMaxSpeed = 3f;
+
+    [Tooltip("How quickly the wobble fades in and out")]
+    [SerializeField] private float wobbleBlendSpeed = 5f;
+
     InputAction upAction;
     InputAction turnAction;
 
     Rigidbody rigidbody;
 
     bool flameOn;
+
+    bool thrusting;
+    float wobbleAmount;
+    float wobblePhase;
+    Quaternion modelBaseRotation = Quaternion.identity;
 
     void Awake()
     {
@@ -34,6 +62,10 @@ public class PlayerMovement : MonoBehaviour
         upAction = InputSystem.actions.FindAction("Up");
         turnAction = InputSystem.actions.FindAction("Turn");
 
+        // Remember the model's rest pose so rocket rotation can go back to normal
+        if (shipModel != null)
+            modelBaseRotation = shipModel.localRotation;
+
         if (maxFuel <= 0f)
             maxFuel = fuel;
 
@@ -43,14 +75,23 @@ public class PlayerMovement : MonoBehaviour
     void OnDisable()
     {
         SetFlame(false);
+
+        thrusting = false;
+        wobbleAmount = 0f;
+
+        if (shipModel != null)
+            shipModel.localRotation = modelBaseRotation;
     }
 
     void FixedUpdate()
     {
         bool isThrusting = upAction.IsPressed() && fuel > 0;
+        thrusting = isThrusting;
 
         if (isThrusting)
             Move();
+
+        ClampSpeed();
 
         SetFlame(isThrusting);
 
@@ -58,6 +99,11 @@ public class PlayerMovement : MonoBehaviour
 
         if (turnDelta != 0)
             Turn(turnDelta);
+    }
+
+    void Update()
+    {
+        UpdateWobble();
     }
 
     void OnCollisionEnter(Collision collision)
@@ -72,9 +118,50 @@ public class PlayerMovement : MonoBehaviour
         rigidbody.AddRelativeForce(Vector3.up * moveSpeed * Time.fixedDeltaTime, ForceMode.Acceleration);
     }
 
+    void ClampSpeed()
+    {
+        if (maxSpeed <= 0f)
+            return;
+
+        // sqrMagnitude to skip the square root on the common case
+        if (rigidbody.linearVelocity.sqrMagnitude > maxSpeed * maxSpeed)
+            rigidbody.linearVelocity = rigidbody.linearVelocity.normalized * maxSpeed;
+    }
+
     void Turn(float turnDelta)
     {
         transform.Rotate(Vector3.right * turnDelta * turnSpeed * Time.fixedDeltaTime);
+    }
+
+    void UpdateWobble()
+    {
+        if (shipModel == null)
+            return;
+
+        wobbleAmount = Mathf.MoveTowards(wobbleAmount, thrusting ? 1f : 0f, wobbleBlendSpeed * Time.deltaTime);
+
+        if (wobbleAmount <= 0f)
+        {
+            shipModel.localRotation = modelBaseRotation;
+            return;
+        }
+
+        // Faster the quicker the rocket is going
+        float speedRatio = maxSpeed > 0f ? Mathf.Clamp01(rigidbody.linearVelocity.magnitude / maxSpeed) : 0f;
+        float currentWobbleSpeed = wobbleSpeed * Mathf.Lerp(1f, wobbleSpeedAtMaxSpeed, speedRatio);
+
+
+        float currentWobbleAngle = wobbleAngle * Mathf.Lerp(wobbleAngleAtRest, 1f, speedRatio);
+
+        wobblePhase += currentWobbleSpeed * Time.deltaTime;
+
+        float pitch = (Mathf.PerlinNoise(wobblePhase, 0f) - 0.5f) * 2f;
+        float yaw = (Mathf.PerlinNoise(0f, wobblePhase) - 0.5f) * 2f;
+        float roll = (Mathf.PerlinNoise(wobblePhase, wobblePhase) - 0.5f) * 2f;
+
+        Vector3 angles = new Vector3(pitch, yaw, roll) * currentWobbleAngle * wobbleAmount;
+
+        shipModel.localRotation = modelBaseRotation * Quaternion.Euler(angles);
     }
 
     public void ResetShip(Vector3 position, Quaternion rotation)
@@ -85,6 +172,12 @@ public class PlayerMovement : MonoBehaviour
         transform.SetPositionAndRotation(position, rotation);
 
         fuel = maxFuel;
+
+        thrusting = false;
+        wobbleAmount = 0f;
+
+        if (shipModel != null)
+            shipModel.localRotation = modelBaseRotation;
 
         SetFlame(false);
     }

@@ -5001,13 +5001,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   fuel: 1000
+  maxFuel: 0
   fuelUseSpeed: 1
   turnSpeed: 100
   moveSpeed: 1000
+  maxSpeed: 50
   flameSystems:
   - {fileID: 3312965588627557781}
   - {fileID: 2905159906151855953}
   clearFlameInstantly: 0
+  shipModel: {fileID: 2521208103187670026}
+  wobbleAngle: 10
+  wobbleAngleAtRest: 0.6
+  wobbleSpeed: 4
+  wobbleSpeedAtMaxSpeed: 5
+  wobbleBlendSpeed: 5
 --- !u!54 &2103196727290013038
 Rigidbody:
   m_ObjectHideFlags: 0

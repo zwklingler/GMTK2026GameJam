@@ -104,6 +104,18 @@ public class GameManager : MonoBehaviour
     [Tooltip("UFOs this far below the ship get cleaned up")]
     [SerializeField] float ufoDespawnDistanceBelowShip = 80f;
 
+    [Tooltip("Possible tilt angle for the UFO")]
+    [SerializeField] float ufoTiltAngle = 8f;
+
+    [Tooltip("Movement speed at which the UFO reaches its full bank angle")]
+    [SerializeField] float ufoTiltReferenceSpeed = 10f;
+
+    [Tooltip("How quickly the UFO changes to a new tilt")]
+    [SerializeField] float ufoTiltSpeed = 120f;
+
+    [Tooltip("Speed of the base hover wobble")]
+    [SerializeField] float ufoWobbleSpeed = 1.5f;
+
     bool shopping = true;
     InputAction upAction;
 
@@ -122,6 +134,8 @@ public class GameManager : MonoBehaviour
         public float offsetX;
         public UfoState state;
         public float timer;
+        public Quaternion baseRotation;
+        public float noiseSeed;
     }
 
     readonly List<ActiveUfo> activeUfos = new List<ActiveUfo>();
@@ -291,7 +305,9 @@ public class GameManager : MonoBehaviour
             gameObject = ufo,
             body = ufoBody,
             offsetX = Random.Range(-ufoFormationSpread, ufoFormationSpread),
-            state = UfoState.Chase
+            state = UfoState.Chase,
+            baseRotation = ufoPrefab.transform.rotation,
+            noiseSeed = Random.Range(0f, 100f)
         });
     }
 
@@ -378,11 +394,39 @@ public class GameManager : MonoBehaviour
 
             position.z = 0f;
 
+            Quaternion rotation = CalculateUfoRotation(ufo, position, delta);
+
             if(ufo.body != null)
+            {
                 ufo.body.MovePosition(position);
+                ufo.body.MoveRotation(rotation);
+            }
             else
-                ufo.gameObject.transform.position = position;
+            {
+                ufo.gameObject.transform.SetPositionAndRotation(position, rotation);
+            }
         }
+    }
+    Quaternion CalculateUfoRotation(ActiveUfo ufo, Vector3 nextPosition, float delta)
+    {
+        Transform ufoTransform = ufo.gameObject.transform;
+
+        float bankBudget = ufoTiltAngle * 0.6f;
+        float wobbleBudget = ufoTiltAngle * 0.4f;
+
+        Vector3 velocity = (nextPosition - ufoTransform.position) / delta;
+
+        float roll = Mathf.Clamp(-velocity.x / ufoTiltReferenceSpeed, -1f, 1f) * bankBudget;
+        float pitch = Mathf.Clamp(velocity.y / ufoTiltReferenceSpeed, -1f, 1f) * bankBudget;
+
+        float noiseTime = Time.time * ufoWobbleSpeed + ufo.noiseSeed;
+
+        float wobblePitch = (Mathf.PerlinNoise(noiseTime, 0f) - 0.5f) * 2f * wobbleBudget;
+        float wobbleRoll = (Mathf.PerlinNoise(0f, noiseTime) - 0.5f) * 2f * wobbleBudget;
+
+        Quaternion target = ufo.baseRotation * Quaternion.Euler(pitch + wobblePitch, 0f, roll + wobbleRoll);
+
+        return Quaternion.RotateTowards(ufoTransform.rotation, target, ufoTiltSpeed * delta);
     }
 
     Vector3 MoveTowardHoverPoint(Vector3 position, Vector3 shipPosition, float offsetX, float delta)

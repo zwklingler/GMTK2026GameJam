@@ -45,6 +45,48 @@ public class GameManager : MonoBehaviour
     [Tooltip("Seconds the blastoff message stays on screen after the count ends")]
     [SerializeField] float blastoffMessageTime = 1f;
 
+    [System.Serializable]
+    class Upgrade
+    {
+        [Tooltip("Button label text")]
+        public string displayName = "Upgrade";
+
+        [Tooltip("Cost of the first buy")]
+        public int baseCost = 100;
+
+        [Tooltip("Cost is multiplied by this after each purchase")]
+        public float costMultiplier = 1.6f;
+
+        [Tooltip("How many times this can be bought")]
+        public int maxLevel = 5;
+
+        [Tooltip("How much one level changes the stat")]
+        public float valuePerLevel = 1f;
+
+        [Tooltip("Button inside the group")]
+        public Button button;
+
+        [Tooltip("Text showing the upgrade name")]
+        public TMP_Text nameText;
+
+        [Tooltip("Text showing the current level")]
+        public TMP_Text levelText;
+
+        [Tooltip("Text showing the cost of the next purchase")]
+        public TMP_Text costText;
+
+        public int level;
+    }
+
+    [Header("Upgrades")]
+    [Tooltip("Adds to the rocket's turn speed each level")]
+    [SerializeField] Upgrade turnSpeedUpgrade;
+
+    [Tooltip("Cuts fuel use per level")]
+    [SerializeField] Upgrade fuelEfficiencyUpgrade;
+
+    //[SerializeField] Upgrade thirdUpgrade;
+
     [Header("Asteroids")]
     [SerializeField] GameObject asteroidPrefab;
 
@@ -191,6 +233,10 @@ public class GameManager : MonoBehaviour
 
     float pointsCarry;
 
+    float baseTurnSpeed;
+    float baseFuelUseSpeed;
+    float baseMoveSpeed;
+
     readonly List<GameObject> activeAsteroids = new List<GameObject>();
     float spawnTimer;
 
@@ -229,6 +275,17 @@ public class GameManager : MonoBehaviour
         shipStartRotation = playerMovement.transform.rotation;
 
         runMaxHeight = shipStartPosition.y;
+
+        baseTurnSpeed = playerMovement.turnSpeed;
+        baseFuelUseSpeed = playerMovement.fuelUseSpeed;
+        baseMoveSpeed = playerMovement.moveSpeed;
+
+        HookUpgradeButton(turnSpeedUpgrade);
+        HookUpgradeButton(fuelEfficiencyUpgrade);
+        //HookUpgradeButton(thirdUpgrade);
+
+        ApplyUpgrades();
+        RefreshShopUI();
 
         playerMovement.enabled = false;
         shopping = true;
@@ -368,6 +425,8 @@ public class GameManager : MonoBehaviour
 
         camera.Follow = cameraShopFocus;
         shopUI.SetActive(true);
+
+        RefreshShopUI();
     }
 
     void TrackHeightPoints(float shipHeight)
@@ -394,6 +453,73 @@ public class GameManager : MonoBehaviour
 
         Points -= amount;
         return true;
+    }
+
+    void HookUpgradeButton(Upgrade upgrade)
+    {
+        if(upgrade == null || upgrade.button == null)
+            return;
+        upgrade.button.onClick.AddListener(() => TryPurchase(upgrade));
+    }
+
+    int GetUpgradeCost(Upgrade upgrade)
+    {
+        return Mathf.RoundToInt(upgrade.baseCost * Mathf.Pow(upgrade.costMultiplier, upgrade.level));
+    }
+
+    void TryPurchase(Upgrade upgrade)
+    {
+        if(upgrade == null || upgrade.level >= upgrade.maxLevel)
+            return;
+
+        // SpendPoints only deducts if the player can afford it
+        if(!SpendPoints(GetUpgradeCost(upgrade)))
+            return;
+
+        upgrade.level++;
+
+        ApplyUpgrades();
+        UpdatePointsUI();
+        RefreshShopUI();
+    }
+
+    void ApplyUpgrades()
+    {
+        playerMovement.turnSpeed = baseTurnSpeed + turnSpeedUpgrade.level * turnSpeedUpgrade.valuePerLevel;
+
+        playerMovement.fuelUseSpeed = baseFuelUseSpeed * Mathf.Pow(1f - fuelEfficiencyUpgrade.valuePerLevel, fuelEfficiencyUpgrade.level);
+
+        // TODO placeholder
+        //playerMovement.moveSpeed = baseMoveSpeed + thirdUpgrade.level * thirdUpgrade.valuePerLevel;
+    }
+
+    void RefreshShopUI()
+    {
+        RefreshUpgradeUI(turnSpeedUpgrade);
+        RefreshUpgradeUI(fuelEfficiencyUpgrade);
+        //RefreshUpgradeUI(thirdUpgrade);
+    }
+
+    void RefreshUpgradeUI(Upgrade upgrade)
+    {
+        if(upgrade == null)
+            return;
+
+        bool maxed = upgrade.level >= upgrade.maxLevel;
+        int cost = GetUpgradeCost(upgrade);
+
+        if(upgrade.nameText != null)
+            upgrade.nameText.text = upgrade.displayName;
+
+        if(upgrade.levelText != null)
+            upgrade.levelText.text = "Lv " + upgrade.level;
+
+        if(upgrade.costText != null)
+            upgrade.costText.text = maxed ? "MAX" : cost + " pts";
+
+        // Greys the button out when it's maxed or unaffordable
+        if(upgrade.button != null)
+            upgrade.button.interactable = !maxed && Points >= cost;
     }
 
     void UpdatePointsUI()

@@ -1455,6 +1455,7 @@ GameObject:
   - component: {fileID: 2042611303}
   - component: {fileID: 2042611307}
   - component: {fileID: 2042611306}
+  - component: {fileID: 2042611308}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1480,7 +1481,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.25709015, g: 0.12484868, b: 0.3962264, a: 0}
+  m_BackGroundColor: {r: 0.29803923, g: 0.6, b: 1, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -1612,6 +1613,27 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!114 &2042611308
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2042611302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65b43da5e49706e469525ffd52b5f29e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraBackground
+  rocket: {fileID: 2143049325}
+  skyColor: {r: 0.3, g: 0.6, b: 1, a: 1}
+  spaceColor: {r: 0, g: 0, b: 0, a: 1}
+  spaceHeight: 500
+--- !u!4 &2143049325 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6686814153073213823, guid: b88547eaebcf10941b0652f5e0925c0a, type: 3}
+  m_PrefabInstance: {fileID: 8599326223066467992}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8599326223066467992
 PrefabInstance:
   m_ObjectHideFlags: 0

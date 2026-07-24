@@ -40,6 +40,9 @@ public class BackgroundProps : MonoBehaviour
         [Tooltip("Min and max height relative to the camera")]
         public Vector2 verticalRange = new Vector2(35f, 80f);
 
+        [Tooltip("Spawning this prop ends the game")]
+        public bool triggersEnding;
+
     }
 
     [SerializeField] private Transform rocket;
@@ -67,6 +70,10 @@ public class BackgroundProps : MonoBehaviour
     [Tooltip("Extra vertical speed")]
     [SerializeField] private float driftSpeed = 0.3f;
 
+    [Header("Ending Prop")]
+    [Tooltip("World Z position the ending sits at")]
+    [SerializeField] private float endingPropDepth = 5f;
+
     [Header("Props")]
     [SerializeField] private List<BackgroundProp> props = new List<BackgroundProp>();
 
@@ -77,19 +84,26 @@ public class BackgroundProps : MonoBehaviour
         public float spawnLocalY;
         public float spawnCameraY;
         public float spawnTime;
+        public bool frozen;
     }
 
     private readonly List<ActiveProp> activeProps = new List<ActiveProp>();
     private float spawnTimer;
 
+    // Set once the ending prop appears
+    private bool endingStarted;
+
     void Update()
     {
-        spawnTimer -= Time.deltaTime;
-
-        if (spawnTimer <= 0f)
+        if (!endingStarted)
         {
-            TrySpawn();
-            spawnTimer = Random.Range(spawnIntervalRange.x, spawnIntervalRange.y);
+            spawnTimer -= Time.deltaTime;
+
+            if (spawnTimer <= 0f)
+            {
+                TrySpawn();
+                spawnTimer = Random.Range(spawnIntervalRange.x, spawnIntervalRange.y);
+            }
         }
 
         MoveProps();
@@ -105,6 +119,7 @@ public class BackgroundProps : MonoBehaviour
  
         activeProps.Clear();
         spawnTimer = 0f;
+        endingStarted = false;
     }
 
     void TrySpawn()
@@ -116,6 +131,12 @@ public class BackgroundProps : MonoBehaviour
 
         if (definition == null)
             return;
+
+        if (definition.triggersEnding)
+        {
+            SpawnEndingProp(definition);
+            return;
+        }
 
         GameObject prop = new GameObject("BackgroundProp_" + definition.name);
         prop.transform.SetParent(transform, false);
@@ -143,8 +164,46 @@ public class BackgroundProps : MonoBehaviour
             definition = definition,
             spawnLocalY = localY,
             spawnCameraY = transform.position.y,
-            spawnTime = Time.time
+            spawnTime = Time.time,
+            frozen = false
         });
+    }
+
+    void SpawnEndingProp(BackgroundProp definition)
+    {
+        GameObject prop = new GameObject("BackgroundProp_" + definition.name);
+
+        SpriteRenderer renderer = prop.AddComponent<SpriteRenderer>();
+        renderer.sprite = definition.sprite;
+
+        float size = Random.Range(definition.sizeRange.x, definition.sizeRange.y);
+        float scale = size / definition.sprite.bounds.size.y;
+        prop.transform.localScale = new Vector3(scale, scale, 1f);
+
+        Vector2 horizontal = definition.overrideSpawnArea ? definition.horizontalRange : new Vector2(-horizontalRange, horizontalRange);
+        Vector2 vertical = definition.overrideSpawnArea ? definition.verticalRange : verticalSpawnRange;
+
+        Vector3 shipPosition = rocket != null ? rocket.position : transform.position;
+
+        prop.transform.position = new Vector3(
+            shipPosition.x + Random.Range(horizontal.x, horizontal.y),
+            shipPosition.y + Random.Range(vertical.x, vertical.y),
+            endingPropDepth);
+
+        prop.transform.rotation = Quaternion.identity;
+
+        activeProps.Add(new ActiveProp
+        {
+            gameObject = prop,
+            definition = definition,
+            spawnLocalY = prop.transform.position.y,
+            spawnCameraY = transform.position.y,
+            spawnTime = Time.time,
+            frozen = true
+        });
+
+        endingStarted = true;
+        GameManager.instance.BeginBlackHoleCapture(prop.transform);
     }
 
     BackgroundProp Choose()
@@ -217,6 +276,10 @@ public class BackgroundProps : MonoBehaviour
                 activeProps.RemoveAt(i);
                 continue;
             }
+
+            // The ending prop is never culled
+            if (prop.frozen)
+                continue;
 
             float cameraDelta = cameraY - prop.spawnCameraY;
             float drift = driftSpeed * (Time.time - prop.spawnTime);

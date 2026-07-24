@@ -185,7 +185,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  - {fileID: 2100000, guid: 9a61d0ac5bdff134c9922dca656f3004, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -208,11 +208,11 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b1ab1c3418191124e9e90b7c6a38ecd2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
-  m_DrawMode: 0
+  m_DrawMode: 2
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
@@ -228,8 +228,8 @@ Transform:
   m_GameObject: {fileID: 152163111}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -8, z: 0}
-  m_LocalScale: {x: 10000, y: 1, z: 0}
+  m_LocalPosition: {x: 0, y: -6.15, z: 0.2}
+  m_LocalScale: {x: 10000.001, y: 10, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -253,8 +253,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 7.9995604}
-  m_Center: {x: 0, y: 0, z: -0.4081937}
+  m_Size: {x: 0.99999994, y: 1, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &246511171
 GameObject:
   m_ObjectHideFlags: 0
@@ -760,6 +760,98 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!1 &504263111
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 504263114}
+  - component: {fileID: 504263113}
+  m_Layer: 0
+  m_Name: StationBackground
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!212 &504263113
+SpriteRenderer:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 504263111}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_Sprite: {fileID: 21300000, guid: fd86622e75ff504488da9f7d3c9ed424, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 19.86, y: 11.83}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_SpriteSortPoint: 0
+  m_BlendShapeWeights: []
+--- !u!4 &504263114
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 504263111}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 8.8, z: 0.1}
+  m_LocalScale: {x: 2, y: 2, z: 0}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!224 &626270921 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4964242462442055157, guid: da71be2ffb094ba419a3bf2149617be5, type: 3}
@@ -1491,6 +1583,94 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4964242462442055157, guid: da71be2ffb094ba419a3bf2149617be5, type: 3}
   m_PrefabInstance: {fileID: 1678093038}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1733417980
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1733417981}
+  - component: {fileID: 1733417983}
+  - component: {fileID: 1733417982}
+  - component: {fileID: 1733417984}
+  m_Layer: 5
+  m_Name: EndingPanel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &1733417981
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1733417980}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1758822372}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1733417982
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1733417980}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1733417983
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1733417980}
+  m_CullTransparentMesh: 1
+--- !u!225 &1733417984
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1733417980}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1757854626
 GameObject:
   m_ObjectHideFlags: 0
@@ -1626,6 +1806,7 @@ RectTransform:
   - {fileID: 1757854627}
   - {fileID: 403501416}
   - {fileID: 2051768542}
+  - {fileID: 1733417981}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1680,6 +1861,13 @@ MonoBehaviour:
   shopUI: {fileID: 1524547215}
   powerupSpawner: {fileID: 1817475658}
   backgroundProps: {fileID: 2042611309}
+  endingPanel: {fileID: 1733417984}
+  endingFadeTime: 2
+  blackHolePullSpeed: 5
+  blackHolePullAcceleration: 10
+  blackHoleCaptureRadius: 0.5
+  blackHoleSpinSpeed: 320
+  blackHoleShrinkDistance: 12
   fuelUI: {fileID: 1757854626}
   fuelBarFill: {fileID: 357873288}
   pointsText: {fileID: 2051768543}
@@ -1719,6 +1907,7 @@ MonoBehaviour:
     levelText: {fileID: 442816221}
     costText: {fileID: 761620790}
     level: 0
+  spawnObstacles: 1
   asteroidPrefab: {fileID: 7863189245426074466, guid: 2444bfab207ef9f4b857bcb9498e22c6, type: 3}
   asteroidStartHeight: 450
   maxAsteroids: 8
@@ -2194,10 +2383,11 @@ MonoBehaviour:
   propDistance: 100
   horizontalRange: 40
   verticalSpawnRange: {x: 45, y: 50}
-  despawnBelow: 90
-  spawnIntervalRange: {x: 1, y: 2}
+  despawnBelow: 60
+  spawnIntervalRange: {x: 1, y: 1}
   maxPropsAlive: 8
   driftSpeed: 0.3
+  endingPropDepth: 5
   props:
   - name: Earth
     sprite: {fileID: 21300000, guid: 0ceaee8b4765c51459b775de34372a5e, type: 3}
@@ -2206,21 +2396,47 @@ MonoBehaviour:
     maxHeight: 300
     sizeRange: {x: 60, y: 65}
     maxAlive: 1
-    parallax: 0.9
+    parallax: 0.8
     overrideSpawnArea: 1
     horizontalRange: {x: -40, y: -10}
     verticalRange: {x: 45, y: 45}
-  - name: Black Hole
-    sprite: {fileID: 21300000, guid: ac200c54dbf3c204280e1293b8414ccd, type: 3}
+    triggersEnding: 0
+  - name: Saturn
+    sprite: {fileID: 21300000, guid: ab01f42c63602ff40bd0f76e15dc2c5d, type: 3}
     weight: 1
     minHeight: 1200
     maxHeight: 1500
-    sizeRange: {x: 45, y: 60}
+    sizeRange: {x: 60, y: 65}
     maxAlive: 1
     parallax: 0.8
     overrideSpawnArea: 0
     horizontalRange: {x: -40, y: 40}
+    verticalRange: {x: 45, y: 120}
+    triggersEnding: 0
+  - name: Galaxy
+    sprite: {fileID: 21300000, guid: 1384f007bd9809446a9046db0b16ca25, type: 3}
+    weight: 1
+    minHeight: 2400
+    maxHeight: 2700
+    sizeRange: {x: 60, y: 65}
+    maxAlive: 1
+    parallax: 0.9
+    overrideSpawnArea: 0
+    horizontalRange: {x: -40, y: 40}
+    verticalRange: {x: 45, y: 120}
+    triggersEnding: 0
+  - name: Black Hole
+    sprite: {fileID: 21300000, guid: ac200c54dbf3c204280e1293b8414ccd, type: 3}
+    weight: 1
+    minHeight: 3600
+    maxHeight: 3900
+    sizeRange: {x: 45, y: 60}
+    maxAlive: 1
+    parallax: 0.7
+    overrideSpawnArea: 1
+    horizontalRange: {x: -5, y: 5}
     verticalRange: {x: 40, y: 80}
+    triggersEnding: 1
   - name: Cloud1
     sprite: {fileID: 21300000, guid: 29bbd18f08c78924c85518438274683a, type: 3}
     weight: 1
@@ -2232,6 +2448,7 @@ MonoBehaviour:
     overrideSpawnArea: 1
     horizontalRange: {x: -40, y: 40}
     verticalRange: {x: 45, y: 120}
+    triggersEnding: 0
   - name: Cloud2
     sprite: {fileID: 21300000, guid: d0246ebf423da6145a99c3a7b68bdf21, type: 3}
     weight: 1
@@ -2243,6 +2460,31 @@ MonoBehaviour:
     overrideSpawnArea: 1
     horizontalRange: {x: -40, y: 40}
     verticalRange: {x: 45, y: 120}
+    triggersEnding: 0
+  - name: Star1
+    sprite: {fileID: 21300000, guid: 30aaaa383cd8f0d498573c331ece9e9c, type: 3}
+    weight: 1
+    minHeight: 200
+    maxHeight: 10000
+    sizeRange: {x: 1, y: 5}
+    maxAlive: 3
+    parallax: 0.9
+    overrideSpawnArea: 0
+    horizontalRange: {x: -40, y: 40}
+    verticalRange: {x: 45, y: 120}
+    triggersEnding: 0
+  - name: Star2
+    sprite: {fileID: 21300000, guid: d43004fa31de73749a8823e9ae72017f, type: 3}
+    weight: 1
+    minHeight: 200
+    maxHeight: 10000
+    sizeRange: {x: 1, y: 5}
+    maxAlive: 3
+    parallax: 0.9
+    overrideSpawnArea: 0
+    horizontalRange: {x: -40, y: 40}
+    verticalRange: {x: 45, y: 120}
+    triggersEnding: 0
 --- !u!1 &2051768541
 GameObject:
   m_ObjectHideFlags: 0
@@ -2613,6 +2855,7 @@ SceneRoots:
   m_Roots:
   - {fileID: 1995290315}
   - {fileID: 8599326223066467992}
+  - {fileID: 504263114}
   - {fileID: 152163113}
   - {fileID: 1817475657}
   - {fileID: 246511172}

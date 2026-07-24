@@ -27,6 +27,29 @@ public class GameManager : MonoBehaviour
     [SerializeField] PowerupSpawner powerupSpawner;
     [SerializeField] BackgroundProps backgroundProps;
 
+    [Header("Ending")]
+    [Tooltip("Panel that fades in once the ship reaches the black hole")]
+    [SerializeField] CanvasGroup endingPanel;
+
+    [Tooltip("Seconds the ending panel takes to fade in")]
+    [SerializeField] float endingFadeTime = 2f;
+
+    [Tooltip("Initial pull speed once the black hole appears")]
+    [SerializeField] float blackHolePullSpeed = 5f;
+
+    [Tooltip("How much the pull speeds up each second")]
+    [SerializeField] float blackHolePullAcceleration = 8f;
+
+    [Tooltip("How close to the center counts as swallowed")]
+    [SerializeField] float blackHoleCaptureRadius = 0.5f;
+
+    [Tooltip("How fast the ship spins as it goes in")]
+    [SerializeField] float blackHoleSpinSpeed = 320f;
+
+    [Tooltip("Distance from the center where the ship shrinks")]
+    [SerializeField] float blackHoleShrinkDistance = 12f;
+
+
     [Header("Fuel UI")]
     [SerializeField] GameObject fuelUI;
 
@@ -89,6 +112,9 @@ public class GameManager : MonoBehaviour
 
     [Tooltip("Adds to the powerup spawn chance each level")]
     [SerializeField] Upgrade powerupChanceUpgrade;
+
+    [Tooltip("Toggle to enable and disable obstacle spawning")]
+    [SerializeField] bool spawnObstacles = true;
 
     [Header("Asteroids")]
     [SerializeField] GameObject asteroidPrefab;
@@ -236,6 +262,13 @@ public class GameManager : MonoBehaviour
 
     float pointsCarry;
 
+    bool endingActive;
+    bool endingFadeStarted;
+    Vector3 blackHoleTarget;
+    float currentPullSpeed;
+    Rigidbody shipBody;
+    Vector3 shipBaseScale = Vector3.one;
+
     float baseTurnSpeed;
     float baseFuelUseSpeed;
     float baseMoveSpeed;
@@ -283,6 +316,8 @@ public class GameManager : MonoBehaviour
         baseFuelUseSpeed = playerMovement.fuelUseSpeed;
         baseMoveSpeed = playerMovement.moveSpeed;
 
+        shipBaseScale = playerMovement.transform.localScale;
+
         HookUpgradeButton(turnSpeedUpgrade);
         HookUpgradeButton(fuelEfficiencyUpgrade);
         HookUpgradeButton(powerupChanceUpgrade);
@@ -295,12 +330,26 @@ public class GameManager : MonoBehaviour
 
         if(countdownText != null)
             countdownText.gameObject.SetActive(false);
+
+        if(endingPanel != null)
+        {
+            endingPanel.alpha = 0f;
+            endingPanel.interactable = false;
+            endingPanel.blocksRaycasts = false;
+            endingPanel.gameObject.SetActive(false);
+        }
     }
 
     void Update()
     {
         UpdateFuelUI();
         UpdatePointsUI();
+
+        if(endingActive)
+        {
+            UpdateBlackHoleCapture();
+            return;
+        }
 
         if(shopping)
             return;
@@ -316,7 +365,10 @@ public class GameManager : MonoBehaviour
 
             if(spawnTimer <= 0f)
             {
-                SpawnAsteroid();
+                if (spawnObstacles)
+                {
+                    SpawnAsteroid();
+                }
                 spawnTimer = Random.Range(spawnIntervalRange.x, spawnIntervalRange.y);
             }
         }
@@ -327,7 +379,10 @@ public class GameManager : MonoBehaviour
 
             if(satelliteSpawnTimer <= 0f)
             {
-                SpawnSatellite(shipPosition);
+                if (spawnObstacles)
+                {
+                    SpawnSatellite(shipPosition);
+                }
                 satelliteSpawnTimer = Random.Range(satelliteSpawnIntervalRange.x, satelliteSpawnIntervalRange.y);
             }
         }
@@ -338,7 +393,10 @@ public class GameManager : MonoBehaviour
 
             if(ufoSpawnTimer <= 0f)
             {
-                SpawnUfo(shipPosition);
+                if (spawnObstacles)
+                {
+                    SpawnUfo(shipPosition);
+                }
                 ufoSpawnTimer = Random.Range(ufoSpawnIntervalRange.x, ufoSpawnIntervalRange.y);
             }
         }
@@ -353,7 +411,7 @@ public class GameManager : MonoBehaviour
 
     void FixedUpdate()
     {
-        if(shopping)
+        if(shopping || endingActive)
             return;
 
         UpdateUfos(playerMovement.transform.position);
@@ -406,7 +464,7 @@ public class GameManager : MonoBehaviour
 
     public void CrashRocket()
     {
-        if(shopping)
+        if(shopping || endingActive)
             return;
 
         ReturnToShop();
@@ -439,6 +497,87 @@ public class GameManager : MonoBehaviour
         shopUI.SetActive(true);
 
         RefreshShopUI();
+    }
+
+    public void BeginBlackHoleCapture(Transform blackHole)
+    {
+        if(endingActive)
+            return;
+
+        endingActive = true;
+        endingFadeStarted = false;
+
+        ClearAllObstacles();
+
+        if(powerupSpawner != null)
+            powerupSpawner.ResetRun();
+
+        playerMovement.enabled = false;
+
+        shipBody = playerMovement.GetComponent<Rigidbody>();
+
+        if(shipBody != null)
+        {
+            shipBody.linearVelocity = Vector3.zero;
+            shipBody.angularVelocity = Vector3.zero;
+            shipBody.isKinematic = true;
+        }
+
+        blackHoleTarget = blackHole.position;
+        blackHoleTarget.z = playerMovement.transform.position.z;
+
+        currentPullSpeed = blackHolePullSpeed;
+
+        if(endingPanel != null)
+        {
+            endingPanel.alpha = 0f;
+            endingPanel.gameObject.SetActive(true);
+        }
+    }
+
+    void UpdateBlackHoleCapture()
+    {
+        Transform ship = playerMovement.transform;
+
+        currentPullSpeed += blackHolePullAcceleration * Time.deltaTime;
+
+        ship.position = Vector3.MoveTowards(ship.position, blackHoleTarget, currentPullSpeed * Time.deltaTime);
+        ship.Rotate(Vector3.forward * blackHoleSpinSpeed * Time.deltaTime, Space.Self);
+
+        float distance = Vector3.Distance(ship.position, blackHoleTarget);
+
+        if(blackHoleShrinkDistance > 0f)
+        {
+            float shrink = Mathf.Clamp01(distance / blackHoleShrinkDistance);
+            ship.localScale = shipBaseScale * shrink;
+        }
+
+        if(distance <= blackHoleCaptureRadius && !endingFadeStarted)
+        {
+            endingFadeStarted = true;
+            ship.localScale = Vector3.zero;
+            FadeInEnding();
+        }
+    }
+
+    async void FadeInEnding()
+    {
+        if(endingPanel == null)
+            return;
+
+        float elapsed = 0f;
+
+        while(elapsed < endingFadeTime)
+        {
+            elapsed += Time.deltaTime;
+            endingPanel.alpha = Mathf.Clamp01(elapsed / endingFadeTime);
+
+            await Awaitable.NextFrameAsync();
+        }
+
+        endingPanel.alpha = 1f;
+        endingPanel.interactable = true;
+        endingPanel.blocksRaycasts = true;
     }
 
     void TrackHeightPoints(float shipHeight)

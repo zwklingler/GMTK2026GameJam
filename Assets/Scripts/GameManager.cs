@@ -18,6 +18,8 @@ public class GameManager : MonoBehaviour
         }
 
         instance = this;
+
+        camera.transform.position = cameraShopFocus.transform.position;
     }
 
     [SerializeField] PlayerMovement playerMovement;
@@ -107,9 +109,11 @@ public class GameManager : MonoBehaviour
     [Tooltip("Adds to the rocket's turn speed each level")]
     [SerializeField] Upgrade turnSpeedUpgrade;
 
-    [Tooltip("Cuts fuel use per level")]
+    [Tooltip("Cuts fuel use per level (linearly)")]
     [SerializeField] Upgrade fuelEfficiencyUpgrade;
 
+    [Tooltip("Adds to the powerup spawn chance each level")]
+    [SerializeField] Upgrade maxSpeedUpgrade;
     [Tooltip("Adds to the powerup spawn chance each level")]
     [SerializeField] Upgrade powerupChanceUpgrade;
 
@@ -272,6 +276,7 @@ public class GameManager : MonoBehaviour
     float baseTurnSpeed;
     float baseFuelUseSpeed;
     float baseMoveSpeed;
+    float baseMaxSpeed;
 
     readonly List<GameObject> activeAsteroids = new List<GameObject>();
     float spawnTimer;
@@ -315,12 +320,14 @@ public class GameManager : MonoBehaviour
         baseTurnSpeed = playerMovement.turnSpeed;
         baseFuelUseSpeed = playerMovement.fuelUseSpeed;
         baseMoveSpeed = playerMovement.moveSpeed;
+        baseMaxSpeed = playerMovement.maxSpeed;
 
         shipBaseScale = playerMovement.transform.localScale;
 
         HookUpgradeButton(turnSpeedUpgrade);
         HookUpgradeButton(fuelEfficiencyUpgrade);
         HookUpgradeButton(powerupChanceUpgrade);
+        HookUpgradeButton(maxSpeedUpgrade);
 
         ApplyUpgrades();
         RefreshShopUI();
@@ -658,9 +665,14 @@ public class GameManager : MonoBehaviour
 
     void ApplyUpgrades()
     {
+        //linear
         playerMovement.turnSpeed = baseTurnSpeed + turnSpeedUpgrade.level * turnSpeedUpgrade.valuePerLevel;
 
-        playerMovement.fuelUseSpeed = baseFuelUseSpeed * Mathf.Pow(1f - fuelEfficiencyUpgrade.valuePerLevel, fuelEfficiencyUpgrade.level);
+        //linear
+        playerMovement.fuelUseSpeed = baseFuelUseSpeed - Mathf.Min(fuelEfficiencyUpgrade.valuePerLevel * fuelEfficiencyUpgrade.level, baseFuelUseSpeed);
+
+        //linear
+        playerMovement.maxSpeed = baseMaxSpeed + maxSpeedUpgrade.level * maxSpeedUpgrade.valuePerLevel;
 
         if(powerupSpawner != null && powerupChanceUpgrade != null)
             powerupSpawner.SpawnChanceBonus = powerupChanceUpgrade.level * powerupChanceUpgrade.valuePerLevel;
@@ -671,6 +683,7 @@ public class GameManager : MonoBehaviour
         RefreshUpgradeUI(turnSpeedUpgrade);
         RefreshUpgradeUI(fuelEfficiencyUpgrade);
         RefreshUpgradeUI(powerupChanceUpgrade);
+        RefreshUpgradeUI(maxSpeedUpgrade);
     }
 
     void RefreshUpgradeUI(Upgrade upgrade)
@@ -698,7 +711,7 @@ public class GameManager : MonoBehaviour
     void UpdatePointsUI()
     {
         if(pointsText != null)
-            pointsText.text = Points.ToString();
+            pointsText.text = Points.ToString() + "pts";
     }
 
     void UpdateFuelUI()

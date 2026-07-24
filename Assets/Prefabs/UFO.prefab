@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 44517503765793242}
   - component: {fileID: 8552341342150109369}
+  - component: {fileID: 7194215140041791289}
   m_Layer: 0
   m_Name: UFO
   m_TagString: Obstacle
@@ -62,6 +63,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 2
+--- !u!114 &7194215140041791289
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 350762570792677931}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff5dd7c5f5d059a4884cd9091ee9d9fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Destructable
 --- !u!1 &5523232549950285090
 GameObject:
   m_ObjectHideFlags: 0

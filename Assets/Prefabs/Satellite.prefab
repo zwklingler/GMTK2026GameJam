@@ -126,6 +126,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4745835474228893149}
   - component: {fileID: 6985355250105144150}
+  - component: {fileID: 2462880333376903219}
   m_Layer: 0
   m_Name: Satellite
   m_TagString: Obstacle
@@ -176,3 +177,15 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 2
+--- !u!114 &2462880333376903219
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4353454036599994306}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff5dd7c5f5d059a4884cd9091ee9d9fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Destructable

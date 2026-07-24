@@ -30,6 +30,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] PowerupSpawner powerupSpawner;
     [SerializeField] BackgroundProps backgroundProps;
 
+    [SerializeField] GameObject pauseMenuPanel;
+    
+
     [Header("Ending")]
     [Tooltip("Panel that fades in once the ship reaches the black hole")]
     [SerializeField] CanvasGroup endingPanel;
@@ -337,6 +340,34 @@ public class GameManager : MonoBehaviour
 
     readonly List<GameObject> activeSatellites = new List<GameObject>();
     float satelliteSpawnTimer;
+
+    public bool IsRunActive
+    {
+        get { return !shopping && !crashing && !endingActive; }
+    }
+
+    public void Respawn()
+    {
+        if(shopping)
+            return;
+
+        crashing = false;
+        endingActive = false;
+
+        playerMovement.gameObject.SetActive(true);
+
+        if(AudioManager.instance != null)
+            AudioManager.instance.StopLayers();
+
+        ReturnToShop();
+    }
+
+    public void RestartGame()
+    {
+        Time.timeScale = 1f;
+        UnityEngine.SceneManagement.SceneManager.LoadScene(
+            UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
+    }
 
     enum UfoState
     {

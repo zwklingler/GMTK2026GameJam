@@ -311,7 +311,7 @@ public class GameManager : MonoBehaviour
     int launchSequence;
     InputAction upAction;
 
-    public int Points { get; private set; }
+    public int Points { get; set; }
 
     // Highest point reached on this life
     float runMaxHeight;

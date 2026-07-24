@@ -7,6 +7,12 @@ public class AudioManager : MonoBehaviour
     public AudioSource musicSource;
     public float musicVolume = 0.5f;
 
+    [Header("Layers")]
+    public AudioSource asteroidLoopSource;
+    public AudioSource ufoLoopSource;
+    public float loopVolume = 0.4f;
+    private float currentMusicVolume;
+
     void Awake()
     {
         if (instance == null)
@@ -20,20 +26,79 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void PlaySFX(AudioClip clip)
+    public void PlaySFX(AudioClip clip, float volume = 1f)
     {
-        sfxSource.PlayOneShot(clip);
+        if (sfxSource == null || clip == null)
+            return;
+
+        sfxSource.PlayOneShot(clip, volume);
     }
 
-    public void PlayMusic(AudioClip clip)
+    public void PlayMusic(AudioClip clip, float volume = 1f)
     {
+        if (musicSource == null || clip == null)
+            return;
+
+        currentMusicVolume = musicVolume * volume;
+        musicSource.volume = currentMusicVolume;
+
         // Don't play music if the same music is already playing
         if (musicSource.clip != clip)
         {
             musicSource.clip = clip;
-            musicSource.volume = musicVolume;
             musicSource.loop = true;
             musicSource.Play();
         }
     }
+
+    public void PlayLayer(AudioSource source, AudioClip clip, float volume = 1f)
+    {
+        if (source == null || clip == null)
+            return;
+
+        source.volume = loopVolume * volume;
+
+        if (source.isPlaying && source.clip == clip)
+            return;
+
+        source.clip = clip;
+        source.loop = true;
+        source.Play();
+    }
+
+    public void RestartMusic()
+    {
+        if (musicSource == null || musicSource.clip == null)
+            return;
+
+        musicSource.Stop();
+        musicSource.time = 0f;
+        musicSource.volume = currentMusicVolume;
+        musicSource.loop = true;
+        musicSource.Play();
+    }
+
+    public void StopLayers()
+    {
+        if (asteroidLoopSource != null)
+        {
+            asteroidLoopSource.Stop();
+            asteroidLoopSource.clip = null;
+        }
+
+        if (ufoLoopSource != null)
+        {
+            ufoLoopSource.Stop();
+            ufoLoopSource.clip = null;
+        }
+    }
+
+    public void StopMusic()
+    {
+        if (musicSource == null)
+            return;
+
+        musicSource.Stop();
+    }
+
 }

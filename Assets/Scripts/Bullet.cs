@@ -8,7 +8,7 @@ public class Bullet : MonoBehaviour
 
     void Update()
     {
-        transform.position += transform.forward * speed * Time.deltaTime;
+        transform.position += transform.up * speed * Time.deltaTime;
 
         t += Time.deltaTime;
 
@@ -20,9 +20,10 @@ public class Bullet : MonoBehaviour
 
     void OnTriggerEnter(Collider collision)
     {
-        if(collision.gameObject.GetComponentInParent<Destructable>() != null)
+        Destructable target = collision.gameObject.GetComponentInParent<Destructable>();
+        if(target != null)
         {
-            Destroy(collision.gameObject);
+            Destroy(target.gameObject);
             Destroy(gameObject);
         }
     }

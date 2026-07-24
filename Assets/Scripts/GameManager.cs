@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
     }
 
     [SerializeField] PlayerMovement playerMovement;
+    [SerializeField] PlayerWeapon playerWeapon;
     [SerializeField] CinemachineCamera camera;
     [SerializeField] Transform cameraShopFocus;
     [SerializeField] GameObject shopUI;
@@ -74,6 +75,33 @@ public class GameManager : MonoBehaviour
 
     [Tooltip("Seconds after launch before touching the floor can end the run")]
     [SerializeField] float floorCrashEnableDelay = 3f;
+
+    [Header("Crash")]
+    [Tooltip("Particle effect spawned where the rocket died")]
+    [SerializeField] GameObject explosionPrefab;
+
+    [Tooltip("Seconds before the explosion is removed")]
+    [SerializeField] float explosionLifetime = 2f;
+
+    [Tooltip("Seconds the explosion plays before resetting")]
+    [SerializeField] float crashPauseTime = 1.2f;
+
+    [System.Serializable]
+    class Sound
+    {
+        public AudioClip clip;
+
+        [Tooltip("Multiplied by the master volume on AudioManager")]
+        [Range(0f, 1f)]
+        public float volume = 1f;
+    }
+
+    [Header("Audio")]
+    [SerializeField] Sound backgroundMusic;
+    [SerializeField] Sound gameOverSound;
+    [SerializeField] Sound victorySound;
+    [SerializeField] Sound asteroidLoop;
+    [SerializeField] Sound ufoLoop;
 
     [System.Serializable]
     class Upgrade
@@ -272,6 +300,7 @@ public class GameManager : MonoBehaviour
     float pointsCarry;
 
     bool endingActive;
+    bool crashing;
     bool endingFadeStarted;
     Vector3 blackHoleTarget;
     float currentPullSpeed;
@@ -350,6 +379,9 @@ public class GameManager : MonoBehaviour
             endingPanel.blocksRaycasts = false;
             endingPanel.gameObject.SetActive(false);
         }
+
+        if (AudioManager.instance != null)
+            AudioManager.instance.PlayMusic(backgroundMusic.clip, backgroundMusic.volume);
     }
 
     void Update()
@@ -363,13 +395,15 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        if(shopping)
+        if(shopping || crashing)
             return;
 
         Vector3 shipPosition = playerMovement.transform.position;
         float shipHeight = shipPosition.y;
 
         TrackHeightPoints(shipHeight);
+
+        UpdateAudioLayers(shipHeight);
 
         if(shipHeight >= asteroidStartHeight)
         {
@@ -423,7 +457,7 @@ public class GameManager : MonoBehaviour
 
     void FixedUpdate()
     {
-        if(shopping || endingActive)
+        if(shopping || endingActive || crashing)
             return;
 
         UpdateUfos(playerMovement.transform.position);
@@ -485,15 +519,46 @@ public class GameManager : MonoBehaviour
             floorCrashEnabled = true;
     }
 
-    public void CrashRocket()
+   public void CrashRocket()
     {
-        if(shopping || endingActive)
+        if(shopping || endingActive || crashing)
             return;
 
-        TrackHeightPoints(playerMovement.transform.position.y);
-        UpdatePointsUI();
+        CrashSequence();
+    }
+
+    async void CrashSequence()
+    {
+        crashing = true;
+
+        // Kill controls
+        playerMovement.enabled = false;
+
+        Vector3 crashPosition = playerMovement.transform.position;
+
+        if(explosionPrefab != null)
+        {
+            GameObject explosion = Instantiate(explosionPrefab, crashPosition, Quaternion.identity);
+            Destroy(explosion, explosionLifetime);
+        }
+
+        // Hide the rocket
+        playerMovement.gameObject.SetActive(false);
+
+        if(AudioManager.instance != null)
+        {
+            AudioManager.instance.StopLayers();
+            AudioManager.instance.StopMusic();
+            AudioManager.instance.PlaySFX(gameOverSound.clip, gameOverSound.volume);
+        }
+
+        await Awaitable.WaitForSecondsAsync(crashPauseTime);
+
+        playerMovement.gameObject.SetActive(true);
 
         ReturnToShop();
+
+        crashing = false;
     }
 
     void ReturnToShop()
@@ -511,6 +576,9 @@ public class GameManager : MonoBehaviour
         playerMovement.enabled = false;
         playerMovement.ResetShip(shipStartPosition, shipStartRotation);
 
+        if(playerWeapon != null)
+            playerWeapon.ResetWeapon();
+
         ClearAsteroids();
         ClearSatellites();
         ClearUfos();
@@ -525,6 +593,10 @@ public class GameManager : MonoBehaviour
         shopUI.SetActive(true);
 
         RefreshShopUI();
+
+        // The fail sound and layer stop already happened
+        if (AudioManager.instance != null)
+            AudioManager.instance.RestartMusic();
     }
 
     public bool CanCrashOnFloor()
@@ -541,6 +613,12 @@ public class GameManager : MonoBehaviour
         endingFadeStarted = false;
 
         ClearAllObstacles();
+
+        if (AudioManager.instance != null)
+        {
+            AudioManager.instance.StopLayers();
+            AudioManager.instance.PlaySFX(victorySound.clip, victorySound.volume);
+        }
 
         if(powerupSpawner != null)
             powerupSpawner.ResetRun();
@@ -1068,5 +1146,18 @@ public class GameManager : MonoBehaviour
         }
 
         activeUfos.Clear();
+    }
+
+    void UpdateAudioLayers(float shipHeight)
+    {
+        if (AudioManager.instance == null)
+            return;
+
+        // The audio manager ignores a clip that's already running
+        if (shipHeight >= asteroidStartHeight)
+            AudioManager.instance.PlayLayer(AudioManager.instance.asteroidLoopSource, asteroidLoop.clip, asteroidLoop.volume);
+
+        if (shipHeight >= ufoStartHeight)
+            AudioManager.instance.PlayLayer(AudioManager.instance.ufoLoopSource, ufoLoop.clip, ufoLoop.volume);
     }
 }

@@ -1,18 +1,27 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections.Generic;
+
 
 public class PlayerWeapon : MonoBehaviour
 {
-    public int ammo = 3;
+    public int maxAmmo = 3;
+    public int ammo;
+
+    [SerializeField] float bulletLifetime = 5f;    
     [SerializeField] GameObject bullet;
     [SerializeField] float coolDown;
 
     InputAction shootAction;
+
+    List<GameObject> activeBullets = new List<GameObject>();
+
     bool canShoot = true;
 
     void Awake()
     {
         shootAction = InputSystem.actions.FindAction("Shoot");
+        ammo = maxAmmo;
     }
 
     void Update()
@@ -33,10 +42,31 @@ public class PlayerWeapon : MonoBehaviour
         ammo--;
         canShoot = false;
 
-        Instantiate(bullet, transform.position, transform.rotation);
+        // Use the prefab's rotation
+        Quaternion rotation = transform.rotation * bullet.transform.rotation;
+        GameObject spawnedBullet = Instantiate(bullet, transform.position, rotation);
+        activeBullets.Add(spawnedBullet);
+
+        Destroy(spawnedBullet, bulletLifetime);
+
 
         await Awaitable.WaitForSecondsAsync(coolDown);
 
         canShoot = true;
+    }
+
+    public void ResetWeapon()
+    {
+        ammo = maxAmmo;
+
+        canShoot = true;
+
+        foreach(GameObject spawned in activeBullets)
+        {
+            if(spawned != null)
+                Destroy(spawned);
+        }
+
+        activeBullets.Clear();
     }
 }

@@ -13,6 +13,8 @@ public class AudioManager : MonoBehaviour
     public float loopVolume = 0.4f;
     private float currentMusicVolume;
 
+    public AudioSource thrustSource;
+
     void Awake()
     {
         if (instance == null)
@@ -80,17 +82,18 @@ public class AudioManager : MonoBehaviour
 
     public void StopLayers()
     {
-        if (asteroidLoopSource != null)
-        {
-            asteroidLoopSource.Stop();
-            asteroidLoopSource.clip = null;
-        }
+        StopLayer(asteroidLoopSource);
+        StopLayer(ufoLoopSource);
+        StopLayer(thrustSource);
+    }
 
-        if (ufoLoopSource != null)
-        {
-            ufoLoopSource.Stop();
-            ufoLoopSource.clip = null;
-        }
+    public void StopLayer(AudioSource source)
+    {
+        if (source == null)
+            return;
+
+        source.Stop();
+        source.clip = null;
     }
 
     public void StopMusic()

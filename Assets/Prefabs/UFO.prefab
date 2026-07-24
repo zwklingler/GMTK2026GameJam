@@ -75,6 +75,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff5dd7c5f5d059a4884cd9091ee9d9fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Destructable
+  destroySound: {fileID: 8300000, guid: d0c966e4ed0a9064b875b3041d5a0329, type: 3}
+  explosionPrefab: {fileID: 5172822811552386761, guid: f40e8af68a4b00347af472c73ea924ea, type: 3}
+  explosionLifetime: 2
+  destroyVolume: 1
 --- !u!1 &5523232549950285090
 GameObject:
   m_ObjectHideFlags: 0

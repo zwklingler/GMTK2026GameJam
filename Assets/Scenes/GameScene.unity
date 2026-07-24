@@ -155,6 +155,7 @@ GameObject:
   - component: {fileID: 47267434}
   - component: {fileID: 47267433}
   - component: {fileID: 47267432}
+  - component: {fileID: 47267437}
   m_Layer: 0
   m_Name: AudioManager
   m_TagString: Untagged
@@ -180,6 +181,7 @@ MonoBehaviour:
   asteroidLoopSource: {fileID: 47267433}
   ufoLoopSource: {fileID: 47267432}
   loopVolume: 0.4
+  thrustSource: {fileID: 47267437}
 --- !u!4 &47267431
 Transform:
   m_ObjectHideFlags: 0
@@ -487,6 +489,103 @@ AudioSource:
     m_PostInfinity: 2
     m_RotationOrder: 4
 --- !u!82 &47267435
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 47267429}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!82 &47267437
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2301,6 +2400,7 @@ MonoBehaviour:
   explosionPrefab: {fileID: 5172822811552386761, guid: f40e8af68a4b00347af472c73ea924ea, type: 3}
   explosionLifetime: 3
   crashPauseTime: 3
+  bombSpawnPause: 3
   backgroundMusic:
     clip: {fileID: 8300000, guid: 625e4562a41780c41802952176c3526e, type: 3}
     volume: 1
@@ -2316,6 +2416,18 @@ MonoBehaviour:
   ufoLoop:
     clip: {fileID: 8300000, guid: 55416374cee374f4fbe48d86fdc0d463, type: 3}
     volume: 1
+  lowFuelSound:
+    clip: {fileID: 8300000, guid: 7839393761420034f8f7d90f07935253, type: 3}
+    volume: 0.8
+  countdown:
+    clip: {fileID: 8300000, guid: cd5bf44718f2c13458e45431278532d3, type: 3}
+    volume: 1
+  purchaseSound:
+    clip: {fileID: 8300000, guid: 74ccdf235457b744880ecdccc9307afe, type: 3}
+    volume: 1
+  lowFuelThreshold: 0.15
+  fuelBarLowColor: {r: 1, g: 0, b: 0, a: 1}
+  lowFuelFlashSpeed: 4
   turnSpeedUpgrade:
     displayName: Turn Speed
     baseCost: 100
@@ -2394,7 +2506,7 @@ MonoBehaviour:
   ufoFormationSpread: 8
   ufoFollowSpeed: 10
   ufoVerticalSpeed: 12
-  ufoAlignThreshold: 3.5
+  ufoAlignThreshold: 2.5
   ufoDiveDelay: 0.7
   ufoDiveSpeed: 20
   ufoDiveTrackSpeed: 4
@@ -2447,15 +2559,21 @@ MonoBehaviour:
   fuelPowerup:
     prefab: {fileID: 1882595395963476978, guid: 37adc15ee06c34f4b96d014bad2998ac, type: 3}
     weight: 1
-    value: 30
+    value: 100
   pointsPowerup:
-    prefab: {fileID: 0}
+    prefab: {fileID: 9200692589341709106, guid: e36b78790ab3c5141bb6404288cf2886, type: 3}
     weight: 1
-    value: 25
+    value: 500
   bombPowerup:
     prefab: {fileID: 2379090132261877823, guid: 3abd352c161767f4db940efafa9943d2, type: 3}
     weight: 1
     value: 25
+  fuelPickupSound: {fileID: 8300000, guid: e689a38183d9503488b68aaef4838b27, type: 3}
+  fuelPickupVolume: 1
+  bombPickupSound: {fileID: 8300000, guid: fbe890f3b0b7dcc47b794fcc507e595b, type: 3}
+  bombPickupVolume: 1
+  pointsPickupSound: {fileID: 8300000, guid: 23d999446f2ea7e4181da8a3278f45c5, type: 3}
+  pointsPickupVolume: 1
 --- !u!1 &1867304101
 GameObject:
   m_ObjectHideFlags: 0
@@ -3268,6 +3386,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 6385650568661620482, guid: b88547eaebcf10941b0652f5e0925c0a, type: 3}
+      propertyPath: boostSound
+      value: 
+      objectReference: {fileID: 8300000, guid: fc9807721c2d6d44ca407b461e958f9b, type: 3}
     - target: {fileID: 6686814153073213823, guid: b88547eaebcf10941b0652f5e0925c0a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

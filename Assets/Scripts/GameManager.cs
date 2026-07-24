@@ -86,6 +86,9 @@ public class GameManager : MonoBehaviour
     [Tooltip("Seconds the explosion plays before resetting")]
     [SerializeField] float crashPauseTime = 1.2f;
 
+    [Tooltip("Seconds where obstacles stop spawning after a bomb is picked up")]
+    [SerializeField] float bombSpawnPause = 3f;
+
     [System.Serializable]
     class Sound
     {
@@ -102,6 +105,19 @@ public class GameManager : MonoBehaviour
     [SerializeField] Sound victorySound;
     [SerializeField] Sound asteroidLoop;
     [SerializeField] Sound ufoLoop;
+
+    [SerializeField] Sound lowFuelSound;
+    [SerializeField] Sound countdown;
+    [SerializeField] Sound purchaseSound;
+
+    [Tooltip("Fuel percentage where it starts flashing")]
+    [Range(0f, 1f)]
+    [SerializeField] float lowFuelThreshold = 0.1f;
+
+    [SerializeField] Color fuelBarLowColor = Color.red;
+
+    [Tooltip("Flash speed")]
+    [SerializeField] float lowFuelFlashSpeed = 4f;
 
     [System.Serializable]
     class Upgrade
@@ -301,6 +317,10 @@ public class GameManager : MonoBehaviour
 
     bool endingActive;
     bool crashing;
+    float obstacleSpawnResumeTime;
+
+    bool lowFuelWarned;
+    Color fuelBarNormalColor;
     bool endingFadeStarted;
     Vector3 blackHoleTarget;
     float currentPullSpeed;
@@ -344,6 +364,9 @@ public class GameManager : MonoBehaviour
     {
         upAction = InputSystem.actions.FindAction("Up");
         upAction.performed += StartRocket;
+
+        if(fuelBarFill != null)
+            fuelBarNormalColor = fuelBarFill.color;
 
         // Remember where the ship started to put it back after a crash
         shipStartPosition = playerMovement.transform.position;
@@ -411,7 +434,7 @@ public class GameManager : MonoBehaviour
 
             if(spawnTimer <= 0f)
             {
-                if (spawnObstacles)
+                if (spawnObstacles && Time.time >= obstacleSpawnResumeTime)
                 {
                     SpawnAsteroid();
                 }
@@ -425,7 +448,7 @@ public class GameManager : MonoBehaviour
 
             if(satelliteSpawnTimer <= 0f)
             {
-                if (spawnObstacles)
+                if (spawnObstacles && Time.time >= obstacleSpawnResumeTime)
                 {
                     SpawnSatellite(shipPosition);
                 }
@@ -439,7 +462,7 @@ public class GameManager : MonoBehaviour
 
             if(ufoSpawnTimer <= 0f)
             {
-                if (spawnObstacles)
+                if (spawnObstacles && Time.time >= obstacleSpawnResumeTime)
                 {
                     SpawnUfo(shipPosition);
                 }
@@ -480,8 +503,13 @@ public class GameManager : MonoBehaviour
 
     async Awaitable Countdown(int time)
     {
-        if(countdownText != null)
+        if(countdownText != null && countdownText.gameObject.activeSelf == false)
+        {
+            if (AudioManager.instance != null)
+                AudioManager.instance.PlaySFX(countdown.clip, countdown.volume);
             countdownText.gameObject.SetActive(true);
+        }
+            
 
         for(int i = time; i > 0; i--)
         {
@@ -575,6 +603,9 @@ public class GameManager : MonoBehaviour
 
         playerMovement.enabled = false;
         playerMovement.ResetShip(shipStartPosition, shipStartRotation);
+
+        lowFuelWarned = false;
+        obstacleSpawnResumeTime = 0f;
 
         if(playerWeapon != null)
             playerWeapon.ResetWeapon();
@@ -720,6 +751,53 @@ public class GameManager : MonoBehaviour
         ClearSatellites();
         ClearUfos();
     }
+    
+    public void BombClearObstacles()
+    {
+        DestroyAllWithEffect(activeAsteroids);
+        DestroyAllWithEffect(activeSatellites);
+        DestroyAllUfosWithEffect();
+
+        obstacleSpawnResumeTime = Time.time + bombSpawnPause;
+    }
+
+    void DestroyAllWithEffect(List<GameObject> list)
+    {
+        for(int i = list.Count - 1; i >= 0; i--)
+        {
+            GameObject obj = list[i];
+            list.RemoveAt(i);
+
+            if(obj == null)
+                continue;
+
+            Destructable destructable = obj.GetComponentInParent<Destructable>();
+
+            if(destructable != null)
+                destructable.DestroyObject();
+            else
+                Destroy(obj);
+        }
+    }
+
+    void DestroyAllUfosWithEffect()
+    {
+        for(int i = activeUfos.Count - 1; i >= 0; i--)
+        {
+            ActiveUfo ufo = activeUfos[i];
+            activeUfos.RemoveAt(i);
+
+            if(ufo.gameObject == null)
+                continue;
+
+            Destructable destructable = ufo.gameObject.GetComponentInParent<Destructable>();
+
+            if(destructable != null)
+                destructable.DestroyObject();
+            else
+                Destroy(ufo.gameObject);
+        }
+    }
 
     public void AddPoints(int amount)
     {
@@ -759,6 +837,9 @@ public class GameManager : MonoBehaviour
         // SpendPoints only deducts if the player can afford it
         if(!SpendPoints(GetUpgradeCost(upgrade)))
             return;
+
+        if(AudioManager.instance != null)
+            AudioManager.instance.PlaySFX(purchaseSound.clip, purchaseSound.volume);
 
         upgrade.level++;
 
@@ -822,11 +903,34 @@ public class GameManager : MonoBehaviour
     {
         float ratio = playerMovement.maxFuel > 0f ? Mathf.Clamp01(playerMovement.fuel / playerMovement.maxFuel) : 0f;
 
+        bool low = !shopping && ratio <= lowFuelThreshold;
+
         if(fuelBarFill != null)
         {
             fuelBarFill.fillAmount = ratio;
+
+            if (low)
+            {
+                float pulse = Mathf.PingPong(Time.time * lowFuelFlashSpeed, 1f);
+                fuelBarFill.color = Color.Lerp(fuelBarNormalColor, fuelBarLowColor, pulse);
+            }
+            else
+            {
+                fuelBarFill.color = fuelBarNormalColor;
+            }
         }
-       
+
+        if(low && !lowFuelWarned)
+        {
+            lowFuelWarned = true;
+
+            if(AudioManager.instance != null)
+                AudioManager.instance.PlaySFX(lowFuelSound.clip, lowFuelSound.volume);
+        }
+        else if (!low && lowFuelWarned)
+        {
+            lowFuelWarned = false;
+        }
     }
 
     void SpawnAsteroid()

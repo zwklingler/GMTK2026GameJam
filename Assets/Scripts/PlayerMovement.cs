@@ -51,6 +51,12 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("How quickly the wobble fades in and out")]
     [SerializeField] private float wobbleBlendSpeed = 5f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip boostSound;
+
+    [Range(0f, 1f)]
+    [SerializeField] private float boostVolume = 1f;
+
     InputAction upAction;
     InputAction turnAction;
 
@@ -242,6 +248,14 @@ public class PlayerMovement : MonoBehaviour
     {
         if (on == flameOn) return;
         flameOn = on;
+
+        if (AudioManager.instance != null)
+        {
+            if (on)
+                AudioManager.instance.PlayLayer(AudioManager.instance.thrustSource, boostSound, boostVolume);
+            else
+                AudioManager.instance.StopLayer(AudioManager.instance.thrustSource);
+        }
 
         var stopMode = clearFlameInstantly ? ParticleSystemStopBehavior.StopEmittingAndClear : ParticleSystemStopBehavior.StopEmitting;
 

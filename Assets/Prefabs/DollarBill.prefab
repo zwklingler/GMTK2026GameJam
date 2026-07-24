@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &2936095094668096588
+--- !u!1 &4330561143277583192
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,47 +8,47 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1317125261897872070}
-  - component: {fileID: 4565562044878142442}
-  - component: {fileID: 4026612444208935388}
-  - component: {fileID: 3777244622005197477}
+  - component: {fileID: 7278350512291795909}
+  - component: {fileID: 8534540908203709329}
+  - component: {fileID: 1749526198482868600}
+  - component: {fileID: 2865955700408559510}
   m_Layer: 0
-  m_Name: Asteroid
-  m_TagString: Obstacle
+  m_Name: DollarBill
+  m_TagString: Powerup
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1317125261897872070
+--- !u!4 &7278350512291795909
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2936095094668096588}
+  m_GameObject: {fileID: 4330561143277583192}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1552223179852210743}
-  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
---- !u!33 &4565562044878142442
+  m_Father: {fileID: 6502095613207497341}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
+--- !u!33 &8534540908203709329
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2936095094668096588}
-  m_Mesh: {fileID: 7803778804846005805, guid: 19dea5507258f5c4999c196b7aaec958, type: 3}
---- !u!23 &4026612444208935388
+  m_GameObject: {fileID: 4330561143277583192}
+  m_Mesh: {fileID: -880490233366850828, guid: dc8e452eb585bc34392585390a3c66f1, type: 3}
+--- !u!23 &1749526198482868600
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2936095094668096588}
+  m_GameObject: {fileID: 4330561143277583192}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -67,8 +67,8 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d56dd95d6ca3c7c4abdc2dd2af5f5d7a, type: 2}
-  - {fileID: 2100000, guid: 7132fac4dbb07c0478997095ec09228a, type: 2}
+  - {fileID: 2100000, guid: dfb902733803ac247986a9a5215d958f, type: 2}
+  - {fileID: 2100000, guid: 107d5065341f091479ad411775296d35, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -92,13 +92,13 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &3777244622005197477
+--- !u!64 &2865955700408559510
 MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2936095094668096588}
+  m_GameObject: {fileID: 4330561143277583192}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -107,14 +107,14 @@ MeshCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: 7803778804846005805, guid: 19dea5507258f5c4999c196b7aaec958, type: 3}
---- !u!1 &7863189245426074466
+  m_Mesh: {fileID: -880490233366850828, guid: dc8e452eb585bc34392585390a3c66f1, type: 3}
+--- !u!1 &9200692589341709106
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -122,39 +122,38 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1552223179852210743}
-  - component: {fileID: 823453329627934314}
-  - component: {fileID: 3640274793576084595}
+  - component: {fileID: 6502095613207497341}
+  - component: {fileID: 8758753509025766018}
   m_Layer: 0
-  m_Name: Asteroid
-  m_TagString: Obstacle
+  m_Name: DollarBill
+  m_TagString: Powerup
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1552223179852210743
+--- !u!4 &6502095613207497341
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7863189245426074466}
+  m_GameObject: {fileID: 9200692589341709106}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1317125261897872070}
+  - {fileID: 7278350512291795909}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!54 &823453329627934314
+--- !u!54 &8758753509025766018
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7863189245426074466}
+  m_GameObject: {fileID: 9200692589341709106}
   serializedVersion: 5
   m_Mass: 1
   m_LinearDamping: 0
@@ -175,19 +174,3 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 2
---- !u!114 &3640274793576084595
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7863189245426074466}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ff5dd7c5f5d059a4884cd9091ee9d9fc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Destructable
-  destroySound: {fileID: 8300000, guid: f5e265458d9da8e4093d72e2b4efe7b4, type: 3}
-  explosionPrefab: {fileID: 5172822811552386761, guid: f40e8af68a4b00347af472c73ea924ea, type: 3}
-  explosionLifetime: 2
-  destroyVolume: 1

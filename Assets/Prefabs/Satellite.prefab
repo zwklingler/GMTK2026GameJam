@@ -189,3 +189,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff5dd7c5f5d059a4884cd9091ee9d9fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Destructable
+  destroySound: {fileID: 8300000, guid: caad9090a40445149a0ac639974dba60, type: 3}
+  explosionPrefab: {fileID: 5172822811552386761, guid: f40e8af68a4b00347af472c73ea924ea, type: 3}
+  explosionLifetime: 2
+  destroyVolume: 1

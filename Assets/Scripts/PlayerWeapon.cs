@@ -18,6 +18,12 @@ public class PlayerWeapon : MonoBehaviour
 
     bool canShoot = true;
 
+    [Header("Audio")]
+    [SerializeField] AudioClip fireSound;
+
+    [Range(0f, 1f)]
+    [SerializeField] float fireVolume = 1f;
+
     void Awake()
     {
         shootAction = InputSystem.actions.FindAction("Shoot");
@@ -41,6 +47,9 @@ public class PlayerWeapon : MonoBehaviour
 
         ammo--;
         canShoot = false;
+
+        if(AudioManager.instance != null)
+            AudioManager.instance.PlaySFX(fireSound, fireVolume);
 
         // Use the prefab's rotation
         Quaternion rotation = transform.rotation * bullet.transform.rotation;

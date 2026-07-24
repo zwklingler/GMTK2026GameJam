@@ -23,7 +23,7 @@ public class Bullet : MonoBehaviour
         Destructable target = collision.gameObject.GetComponentInParent<Destructable>();
         if(target != null)
         {
-            Destroy(target.gameObject);
+            target.DestroyObject();
             Destroy(gameObject);
         }
     }

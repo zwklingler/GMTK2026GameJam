@@ -61,6 +61,21 @@ public class PowerupSpawner : MonoBehaviour
     [Tooltip("Bomb obstacle removal")]
     [SerializeField] PowerupDefinition bombPowerup;
 
+    [Header("Audio")]
+    [SerializeField] AudioClip fuelPickupSound;
+
+    [Range(0f, 1f)]
+    [SerializeField] float fuelPickupVolume = 1f;
+
+    [SerializeField] AudioClip bombPickupSound;
+
+    [Range(0f, 1f)]
+    [SerializeField] float bombPickupVolume = 1f;
+
+    [SerializeField] AudioClip pointsPickupSound;
+    [Range(0f, 1f)]
+    [SerializeField] float pointsPickupVolume = 1f;
+
     class ActivePowerup
     {
         public GameObject gameObject;
@@ -72,7 +87,6 @@ public class PowerupSpawner : MonoBehaviour
     float powerupSpawnTimer;
 
     public float SpawnChanceBonus { get; set; }
-
     float CurrentSpawnChance
     {
         get { return Mathf.Clamp01(basePowerupSpawnChance + SpawnChanceBonus); }
@@ -210,14 +224,22 @@ public class PowerupSpawner : MonoBehaviour
             case PowerupType.Fuel:
                 if(playerMovement != null)
                     playerMovement.fuel = Mathf.Min(playerMovement.fuel + value, playerMovement.maxFuel);
+
+                if(AudioManager.instance != null)
+                    AudioManager.instance.PlaySFX(fuelPickupSound, fuelPickupVolume);
                 break;
 
             case PowerupType.Points:
                 GameManager.instance.AddPoints(Mathf.RoundToInt(value));
+                if(AudioManager.instance != null)
+                    AudioManager.instance.PlaySFX(pointsPickupSound, pointsPickupVolume);
                 break;
 
             case PowerupType.Bomb:
-                GameManager.instance.ClearAllObstacles();
+                GameManager.instance.BombClearObstacles();
+
+                if(AudioManager.instance != null)
+                    AudioManager.instance.PlaySFX(bombPickupSound, bombPickupVolume);
                 break;
         }
     }

@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
+using TMPro;
 
 
 public class PlayerWeapon : MonoBehaviour
@@ -11,6 +12,7 @@ public class PlayerWeapon : MonoBehaviour
     [SerializeField] float bulletLifetime = 5f;    
     [SerializeField] GameObject bullet;
     [SerializeField] float coolDown;
+    [SerializeField] TextMeshProUGUI ammoCounter;
 
     InputAction shootAction;
 
@@ -26,6 +28,9 @@ public class PlayerWeapon : MonoBehaviour
 
     void Update()
     {
+        //I am aware this is a cheap solution
+        ammoCounter.text = ammo.ToString();
+
         if(shootAction.WasPressedThisFrame())
         {
             TryShoot();

@@ -142,7 +142,7 @@ public class PlayerMovement : MonoBehaviour
             return true;
 
         bool isFloor = other.CompareTag("Floor")
-            || other.name.IndexOf("floor", System.StringComparison.OrdinalIgnoreCase) >= 0;
+            || other.name.IndexOf("Floor", System.StringComparison.OrdinalIgnoreCase) >= 0;
 
         return isFloor && GameManager.instance.CanCrashOnFloor();
     }

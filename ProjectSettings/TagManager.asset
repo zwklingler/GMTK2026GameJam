@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Obstacle
   - Powerup
+  - Floor
   layers:
   - Default
   - TransparentFX

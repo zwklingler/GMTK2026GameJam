@@ -122,8 +122,29 @@ public class PlayerMovement : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Obstacle"))
+        TryCrash(collision.gameObject);
+    }
+
+    void OnCollisionStay(Collision collision)
+    {
+        TryCrash(collision.gameObject);
+    }
+
+    void TryCrash(GameObject other)
+    {
+        if (IsCrashSurface(other))
             GameManager.instance.CrashRocket();
+    }
+
+    bool IsCrashSurface(GameObject other)
+    {
+        if (other.CompareTag("Obstacle"))
+            return true;
+
+        bool isFloor = other.CompareTag("Floor")
+            || other.name.IndexOf("floor", System.StringComparison.OrdinalIgnoreCase) >= 0;
+
+        return isFloor && GameManager.instance.CanCrashOnFloor();
     }
 
     void OnTriggerEnter(Collider other)

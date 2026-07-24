@@ -72,6 +72,9 @@ public class GameManager : MonoBehaviour
     [Tooltip("Seconds the blastoff message stays on screen after the count ends")]
     [SerializeField] float blastoffMessageTime = 1f;
 
+    [Tooltip("Seconds after launch before touching the floor can end the run")]
+    [SerializeField] float floorCrashEnableDelay = 3f;
+
     [System.Serializable]
     class Upgrade
     {
@@ -257,6 +260,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] float ufoWobbleSpeed = 1.5f;
 
     bool shopping = true;
+    bool floorCrashEnabled;
+    int launchSequence;
     InputAction upAction;
 
     public int Points { get; private set; }
@@ -436,6 +441,7 @@ public class GameManager : MonoBehaviour
         await Countdown(3);
 
         playerMovement.enabled = true;
+        EnableFloorCrashAfterDelay(++launchSequence);
     }
 
     async Awaitable Countdown(int time)
@@ -469,10 +475,23 @@ public class GameManager : MonoBehaviour
             countdownText.gameObject.SetActive(false);
     }
 
+    async void EnableFloorCrashAfterDelay(int sequence)
+    {
+        floorCrashEnabled = false;
+
+        await Awaitable.WaitForSecondsAsync(floorCrashEnableDelay);
+
+        if(sequence == launchSequence && !shopping && !endingActive)
+            floorCrashEnabled = true;
+    }
+
     public void CrashRocket()
     {
         if(shopping || endingActive)
             return;
+
+        TrackHeightPoints(playerMovement.transform.position.y);
+        UpdatePointsUI();
 
         ReturnToShop();
     }
@@ -480,6 +499,8 @@ public class GameManager : MonoBehaviour
     void ReturnToShop()
     {
         shopping = true;
+        floorCrashEnabled = false;
+        launchSequence++;
         spawnTimer = 0f;
         satelliteSpawnTimer = 0f;
         ufoSpawnTimer = 0f;
@@ -504,6 +525,11 @@ public class GameManager : MonoBehaviour
         shopUI.SetActive(true);
 
         RefreshShopUI();
+    }
+
+    public bool CanCrashOnFloor()
+    {
+        return !shopping && !endingActive && floorCrashEnabled;
     }
 
     public void BeginBlackHoleCapture(Transform blackHole)

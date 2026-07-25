@@ -81,7 +81,9 @@ public class BackgroundProps : MonoBehaviour
     {
         public GameObject gameObject;
         public BackgroundProp definition;
+        public float spawnLocalX;
         public float spawnLocalY;
+        public float spawnCameraX;
         public float spawnCameraY;
         public float spawnTime;
         public bool frozen;
@@ -162,7 +164,9 @@ public class BackgroundProps : MonoBehaviour
         {
             gameObject = prop,
             definition = definition,
+            spawnLocalX = localX,
             spawnLocalY = localY,
+            spawnCameraX = transform.position.x,
             spawnCameraY = transform.position.y,
             spawnTime = Time.time,
             frozen = false
@@ -265,6 +269,7 @@ public class BackgroundProps : MonoBehaviour
 
     void MoveProps()
     {
+        float cameraX = transform.position.x;
         float cameraY = transform.position.y;
 
         for (int i = activeProps.Count - 1; i >= 0; i--)
@@ -281,12 +286,16 @@ public class BackgroundProps : MonoBehaviour
             if (prop.frozen)
                 continue;
 
-            float cameraDelta = cameraY - prop.spawnCameraY;
+            float cameraDeltaX = cameraX - prop.spawnCameraX;
+            float cameraDeltaY = cameraY - prop.spawnCameraY;
             float drift = driftSpeed * (Time.time - prop.spawnTime);
 
-            float localY = prop.spawnLocalY - cameraDelta * (1f - prop.definition.parallax) + drift;
+            // Same parallax factor on both x and y
+            float localX = prop.spawnLocalX - cameraDeltaX * (1f - prop.definition.parallax);
+            float localY = prop.spawnLocalY - cameraDeltaY * (1f - prop.definition.parallax) + drift;
 
             Vector3 position = prop.gameObject.transform.localPosition;
+            position.x = localX;
             position.y = localY;
             prop.gameObject.transform.localPosition = position;
 

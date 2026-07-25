@@ -3,6 +3,7 @@ using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using UnityEngine.Video;
 using TMPro;
 
 public class GameManager : MonoBehaviour
@@ -27,6 +28,25 @@ public class GameManager : MonoBehaviour
     [SerializeField] CinemachineCamera camera;
     [SerializeField] Transform cameraShopFocus;
     [SerializeField] GameObject shopUI;
+
+    [Header("Tutorial")]
+    [Tooltip("Panel with tutorial text and video")]
+    [SerializeField] GameObject tutorialPanel;
+
+    [Tooltip("Video player on the tutorial panel")]
+    [SerializeField] VideoPlayer tutorialVideo;
+
+    [Tooltip("Video file name")]
+    [SerializeField] string tutorialVideoFileName = "tutorial.mp4";
+
+    [Tooltip("Bool to always show the tutorial")]
+    [SerializeField] bool alwaysShowTutorial = false;
+
+    [Tooltip("Tutorial video volume")]
+    [Range(0f, 1f)]
+    [SerializeField] float tutorialVideoVolume = 0.5f;
+
+
     [SerializeField] PowerupSpawner powerupSpawner;
     [SerializeField] BackgroundProps backgroundProps;
 
@@ -54,6 +74,16 @@ public class GameManager : MonoBehaviour
 
     [Tooltip("Distance from the center where the ship shrinks")]
     [SerializeField] float blackHoleShrinkDistance = 12f;
+
+    [Tooltip("Video player on the ending panel")]
+    [SerializeField] VideoPlayer endVideo;
+
+    [Tooltip("End video file name")]
+    [SerializeField] string endVideoFileName = "end.mp4";
+
+    [Tooltip("End video volume")]
+    [Range(0f, 1f)]
+    [SerializeField] float endVideoVolume = 0.5f;
 
 
     [Header("Fuel UI")]
@@ -307,6 +337,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] float ufoWobbleSpeed = 1.5f;
 
     bool shopping = true;
+
+    bool tutorialSeen = false;
+    bool firstLaunch;
     bool floorCrashEnabled;
     int launchSequence;
     InputAction upAction;
@@ -365,8 +398,7 @@ public class GameManager : MonoBehaviour
     public void RestartGame()
     {
         Time.timeScale = 1f;
-        UnityEngine.SceneManagement.SceneManager.LoadScene(
-            UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
+        UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
     }
 
     enum UfoState
@@ -426,6 +458,23 @@ public class GameManager : MonoBehaviour
         if(countdownText != null)
             countdownText.gameObject.SetActive(false);
 
+        firstLaunch = tutorialSeen == false || alwaysShowTutorial;
+
+        if(firstLaunch)
+        {
+            if(shopUI != null)
+                shopUI.SetActive(false);
+
+            if(tutorialPanel != null)
+                tutorialPanel.SetActive(true);
+
+            PlayTutorialVideo();
+        }
+        else if(tutorialPanel != null)
+        {
+            tutorialPanel.SetActive(false);
+        }
+
         if(endingPanel != null)
         {
             endingPanel.alpha = 0f;
@@ -434,7 +483,7 @@ public class GameManager : MonoBehaviour
             endingPanel.gameObject.SetActive(false);
         }
 
-        if (AudioManager.instance != null)
+        if (!firstLaunch && AudioManager.instance != null)
             AudioManager.instance.PlayMusic(backgroundMusic.clip, backgroundMusic.volume);
     }
 
@@ -517,19 +566,65 @@ public class GameManager : MonoBehaviour
         UpdateUfos(playerMovement.transform.position);
     }
 
-    async void StartRocket(InputAction.CallbackContext context)
+    void StartRocket(InputAction.CallbackContext context)
+    {
+        if(!shopping)
+            return;
+
+        if(firstLaunch)
+            return;
+
+        LaunchRocket();
+    }
+
+    async void LaunchRocket()
     {
         if(!shopping)
             return;
 
         shopping = false;
-        shopUI.SetActive(false);
+
+        if(shopUI != null)
+            shopUI.SetActive(false);
+
         camera.Follow = playerMovement.transform;
 
         await Countdown(3);
 
         playerMovement.enabled = true;
         EnableFloorCrashAfterDelay(++launchSequence);
+    }
+
+    void PlayTutorialVideo()
+    {
+        if(tutorialVideo == null)
+            return;
+
+        // URL source is the only mode that works on WebGL
+        tutorialVideo.source = VideoSource.Url;
+        tutorialVideo.url = System.IO.Path.Combine(Application.streamingAssetsPath, tutorialVideoFileName);
+
+        tutorialVideo.SetDirectAudioVolume(0, tutorialVideoVolume);
+
+
+        tutorialVideo.Play();
+    }
+
+    public void OnTutorialContinue()
+    {
+        if(tutorialVideo != null)
+            tutorialVideo.Stop();
+
+        if(tutorialPanel != null)
+            tutorialPanel.SetActive(false);
+
+        firstLaunch = false;
+        tutorialSeen = true;
+
+        LaunchRocket();
+
+        if (AudioManager.instance != null)
+            AudioManager.instance.PlayMusic(backgroundMusic.clip, backgroundMusic.volume);
     }
 
     async Awaitable Countdown(int time)
@@ -735,6 +830,12 @@ public class GameManager : MonoBehaviour
 
     async void FadeInEnding()
     {
+        if (AudioManager.instance != null)
+        {
+            AudioManager.instance.StopLayers();
+            AudioManager.instance.StopMusic();
+        }
+
         if(endingPanel == null)
             return;
 
@@ -751,7 +852,24 @@ public class GameManager : MonoBehaviour
         endingPanel.alpha = 1f;
         endingPanel.interactable = true;
         endingPanel.blocksRaycasts = true;
+
+        PlayEndingVideo();
     }
+
+    void PlayEndingVideo()
+    {
+        if(endVideo == null)
+            return;
+
+        // URL source for WebGL
+        endVideo.source = VideoSource.Url;
+        endVideo.url = System.IO.Path.Combine(Application.streamingAssetsPath, endVideoFileName);
+
+        endVideo.SetDirectAudioVolume(0, endVideoVolume);
+
+        endVideo.Play();
+    }
+
 
     void TrackHeightPoints(float shipHeight)
     {

@@ -109,6 +109,9 @@ public class GameManager : MonoBehaviour
     [Tooltip("Seconds after launch before touching the floor can end the run")]
     [SerializeField] float floorCrashEnableDelay = 3f;
 
+    [Tooltip("How far above the launch height counts as having left the ground")]
+    [SerializeField] float leftGroundHeight = 1f;
+
     [Header("Crash")]
     [Tooltip("Particle effect spawned where the rocket died")]
     [SerializeField] GameObject explosionPrefab;
@@ -199,6 +202,28 @@ public class GameManager : MonoBehaviour
 
     [Tooltip("Toggle to enable and disable obstacle spawning")]
     [SerializeField] bool spawnObstacles = true;
+
+    [Header("Out Of Fuel Rescue")]
+    [Tooltip("When out of fuel and not moving upwards, an asteroid is sent to intercept the ship at this interval")]
+    [SerializeField] float outOfFuelInterceptInterval = 3f;
+
+    [Tooltip("How far above the ship the interceptor spawns")]
+    [SerializeField] float interceptSpawnHeight = 40f;
+
+    [Tooltip("Starting speed the interceptor travels toward the ship")]
+    [SerializeField] float interceptSpeed = 18f;
+
+    [Tooltip("Most interceptors alive at once")]
+    [SerializeField] int maxInterceptors = 2;
+
+    [Tooltip("How much an interceptor speeds up each second while it hasn't reached the ship")]
+    [SerializeField] float interceptAcceleration = 6f;
+
+    [Tooltip("Ceiling on interceptor speed, so it stays catchable to the physics step")]
+    [SerializeField] float interceptMaxSpeed = 60f;
+
+    [Tooltip("Upward velocity below this counts as not moving upwards")]
+    [SerializeField] float climbingThreshold = 0.5f;
 
     [Header("Asteroids")]
     [SerializeField] GameObject asteroidPrefab;
@@ -342,6 +367,7 @@ public class GameManager : MonoBehaviour
     bool firstLaunch;
     bool floorCrashEnabled;
     int launchSequence;
+    bool hasLeftGround;
     InputAction upAction;
 
     public int Points { get; set; }
@@ -361,6 +387,16 @@ public class GameManager : MonoBehaviour
     Vector3 blackHoleTarget;
     float currentPullSpeed;
     Rigidbody shipBody;
+
+    float interceptTimer;
+
+    class Interceptor
+    {
+        public Rigidbody body;
+        public float speed;
+    }
+
+    readonly List<Interceptor> activeInterceptors = new List<Interceptor>();
     Vector3 shipBaseScale = Vector3.one;
 
     float baseTurnSpeed;
@@ -435,6 +471,8 @@ public class GameManager : MonoBehaviour
         shipStartPosition = playerMovement.transform.position;
         shipStartRotation = playerMovement.transform.rotation;
 
+        shipBody = playerMovement.GetComponent<Rigidbody>();
+
         runMaxHeight = shipStartPosition.y;
 
         baseTurnSpeed = playerMovement.turnSpeed;
@@ -506,6 +544,8 @@ public class GameManager : MonoBehaviour
 
         TrackHeightPoints(shipHeight);
 
+        UpdateFloorCrashArming(shipHeight);
+
         UpdateAudioLayers(shipHeight);
 
         if(shipHeight >= asteroidStartHeight)
@@ -550,6 +590,8 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        UpdateOutOfFuelRescue(shipPosition);
+
         if(powerupSpawner != null)
             powerupSpawner.Tick(shipPosition);
 
@@ -564,6 +606,31 @@ public class GameManager : MonoBehaviour
             return;
 
         UpdateUfos(playerMovement.transform.position);
+        SteerInterceptors();
+    }
+
+    void SteerInterceptors()
+    {
+        Vector3 shipPosition = playerMovement.transform.position;
+
+        for(int i = activeInterceptors.Count - 1; i >= 0; i--)
+        {
+            Interceptor interceptor = activeInterceptors[i];
+
+            if(interceptor.body == null)
+            {
+                activeInterceptors.RemoveAt(i);
+                continue;
+            }
+
+            interceptor.speed = Mathf.Min(interceptor.speed + interceptAcceleration * Time.fixedDeltaTime, interceptMaxSpeed);
+
+            // Re-aim at the ship to give it homing
+            Vector3 toShip = shipPosition - interceptor.body.position;
+            toShip.z = 0f;
+
+            interceptor.body.linearVelocity = toShip.normalized * interceptor.speed;
+        }
     }
 
     void StartRocket(InputAction.CallbackContext context)
@@ -592,7 +659,10 @@ public class GameManager : MonoBehaviour
         await Countdown(3);
 
         playerMovement.enabled = true;
-        EnableFloorCrashAfterDelay(++launchSequence);
+
+        floorCrashEnabled = false;
+        hasLeftGround = false;
+        launchSequence++;
     }
 
     void PlayTutorialVideo()
@@ -663,10 +733,26 @@ public class GameManager : MonoBehaviour
             countdownText.gameObject.SetActive(false);
     }
 
+    void UpdateFloorCrashArming(float shipHeight)
+    {
+        if(floorCrashEnabled || shopping || endingActive)
+            return;
+
+        if(!hasLeftGround)
+        {
+            if(shipHeight >= shipStartPosition.y + leftGroundHeight)
+            {
+                hasLeftGround = true;
+                EnableFloorCrashAfterDelay(launchSequence);
+            }
+
+            return;
+        }
+    }
+
     async void EnableFloorCrashAfterDelay(int sequence)
     {
-        floorCrashEnabled = false;
-
+        // Runs once the ship has left the ground
         await Awaitable.WaitForSecondsAsync(floorCrashEnableDelay);
 
         if(sequence == launchSequence && !shopping && !endingActive)
@@ -719,6 +805,7 @@ public class GameManager : MonoBehaviour
     {
         shopping = true;
         floorCrashEnabled = false;
+        hasLeftGround = false;
         launchSequence++;
         spawnTimer = 0f;
         satelliteSpawnTimer = 0f;
@@ -1082,6 +1169,62 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    void UpdateOutOfFuelRescue(Vector3 shipPosition)
+    {
+        // Only kicks in with an empty tank
+        if(playerMovement.fuel > 0f)
+        {
+            interceptTimer = 0f;
+            return;
+        }
+
+        float verticalVelocity = shipBody != null ? shipBody.linearVelocity.y : 0f;
+
+        if(verticalVelocity > climbingThreshold)
+        {
+            interceptTimer = 0f;
+            return;
+        }
+
+        interceptTimer -= Time.deltaTime;
+
+        if(interceptTimer <= 0f)
+        {
+            SpawnInterceptor(shipPosition);
+            interceptTimer = outOfFuelInterceptInterval;
+        }
+    }
+
+    // Spawn an asteroid to intecept the ship and blow it up
+    void SpawnInterceptor(Vector3 shipPosition)
+    {
+        if(asteroidPrefab == null)
+            return;
+
+        if(activeInterceptors.Count >= maxInterceptors)
+            return;
+
+        Vector3 spawnPosition = new Vector3(shipPosition.x, shipPosition.y + interceptSpawnHeight, 0f);
+
+        GameObject asteroid = Instantiate(asteroidPrefab, spawnPosition, Random.rotation);
+
+        float size = Random.Range(asteroidSizeRange.x, asteroidSizeRange.y);
+        asteroid.transform.localScale *= size;
+
+        if(asteroid.TryGetComponent(out Rigidbody body))
+        {
+            body.useGravity = false;
+
+            Vector3 toShip = (shipPosition - spawnPosition).normalized;
+            body.linearVelocity = toShip * interceptSpeed;
+            body.angularVelocity = new Vector3(Random.Range(-asteroidSpinSpeed, asteroidSpinSpeed), Random.Range(-asteroidSpinSpeed, asteroidSpinSpeed), Random.Range(-asteroidSpinSpeed, asteroidSpinSpeed));
+
+            activeInterceptors.Add(new Interceptor { body = body, speed = interceptSpeed });
+        }
+
+        activeAsteroids.Add(asteroid);
+    }
+
     void SpawnAsteroid()
     {
         if(asteroidPrefab == null)
@@ -1388,6 +1531,7 @@ public class GameManager : MonoBehaviour
         }
 
         activeAsteroids.Clear();
+        activeInterceptors.Clear();
     }
 
     void ClearUfos()

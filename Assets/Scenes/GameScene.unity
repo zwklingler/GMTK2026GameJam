@@ -4459,7 +4459,8 @@ MonoBehaviour:
   pointsPerHeight: 1.5
   countdownText: {fileID: 403501417}
   blastoffMessageTime: 1
-  floorCrashEnableDelay: 3
+  floorCrashEnableDelay: 1.5
+  leftGroundHeight: 1
   explosionPrefab: {fileID: 5172822811552386761, guid: f40e8af68a4b00347af472c73ea924ea, type: 3}
   explosionLifetime: 3
   crashPauseTime: 3
@@ -4536,6 +4537,13 @@ MonoBehaviour:
     costText: {fileID: 1202489839}
     level: 0
   spawnObstacles: 1
+  outOfFuelInterceptInterval: 6
+  interceptSpawnHeight: 40
+  interceptSpeed: 18
+  maxInterceptors: 2
+  interceptAcceleration: 6
+  interceptMaxSpeed: 60
+  climbingThreshold: 4
   asteroidPrefab: {fileID: 7863189245426074466, guid: 2444bfab207ef9f4b857bcb9498e22c6, type: 3}
   asteroidStartHeight: 800
   maxAsteroids: 3

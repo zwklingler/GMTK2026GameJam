@@ -2522,7 +2522,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1840871465208853768, guid: da71be2ffb094ba419a3bf2149617be5, type: 3}
       propertyPath: m_Name
-      value: UpgradeMaxSpeed
+      value: UpgradeThrustFoce
       objectReference: {fileID: 0}
     - target: {fileID: 4964242462442055157, guid: da71be2ffb094ba419a3bf2149617be5, type: 3}
       propertyPath: m_Pivot.x
@@ -4616,7 +4616,7 @@ MonoBehaviour:
     baseCost: 100
     costMultiplier: 1.6
     maxLevel: 10
-    valuePerLevel: 20
+    valuePerLevel: 25
     button: {fileID: 1536687906}
     nameText: {fileID: 149708773}
     levelText: {fileID: 1773744494}
@@ -4626,19 +4626,19 @@ MonoBehaviour:
     displayName: Fuel Efficiency
     baseCost: 100
     costMultiplier: 1.25
-    maxLevel: 20
-    valuePerLevel: 1
+    maxLevel: 10
+    valuePerLevel: 1.5
     button: {fileID: 710054870}
     nameText: {fileID: 1548679941}
     levelText: {fileID: 959152054}
     costText: {fileID: 315278088}
     level: 0
-  maxSpeedUpgrade:
-    displayName: Max Speed
+  thrustUpgrade:
+    displayName: Thrust
     baseCost: 100
-    costMultiplier: 2
-    maxLevel: 5
-    valuePerLevel: 5
+    costMultiplier: 1.6
+    maxLevel: 10
+    valuePerLevel: 100
     button: {fileID: 675061674}
     nameText: {fileID: 237184289}
     levelText: {fileID: 602286594}
@@ -4657,7 +4657,7 @@ MonoBehaviour:
     level: 0
   spawnObstacles: 1
   outOfFuelInterceptInterval: 6
-  interceptSpawnHeight: 40
+  interceptSpawnHeight: 45
   interceptSpeed: 18
   maxInterceptors: 2
   interceptAcceleration: 6
@@ -4666,8 +4666,8 @@ MonoBehaviour:
   asteroidPrefab: {fileID: 7863189245426074466, guid: 2444bfab207ef9f4b857bcb9498e22c6, type: 3}
   asteroidStartHeight: 800
   maxAsteroids: 3
-  spawnIntervalRange: {x: 0.3, y: 2}
-  spawnHeightAboveShip: 40
+  spawnIntervalRange: {x: 0.5, y: 2}
+  spawnHeightAboveShip: 45
   spawnSpread: 40
   asteroidSizeRange: {x: 1, y: 2}
   asteroidFallSpeed: {x: 0.5, y: 1}
@@ -4677,13 +4677,13 @@ MonoBehaviour:
   satellitePrefab: {fileID: 4353454036599994306, guid: bb760510ec8bc314184b85cae483030d, type: 3}
   satelliteStartHeight: 300
   maxSatellites: 3
-  satelliteSpawnIntervalRange: {x: 0.5, y: 4}
-  satelliteSpawnHeightRange: {x: 15, y: 40}
-  satelliteSpawnSideOffset: 40
+  satelliteSpawnIntervalRange: {x: 1, y: 5}
+  satelliteSpawnHeightRange: {x: 25, y: 60}
+  satelliteSpawnSideOffset: 45
   satelliteSpeedRange: {x: 8, y: 10}
   satelliteVerticalSpeed: 2
   satelliteSpinSpeedY: 3
-  satelliteRotationRangeX: 40
+  satelliteRotationRangeX: 45
   satelliteRotationRangeY: 0
   satelliteRotationRangeZ: 40
   satelliteDespawnDistanceBelowShip: 60
@@ -4691,14 +4691,14 @@ MonoBehaviour:
   ufoPrefab: {fileID: 350762570792677931, guid: 7f3e1e213c3b3754a8beadf5ec2bbac0, type: 3}
   ufoStartHeight: 1000
   maxUfos: 2
-  ufoSpawnIntervalRange: {x: 8, y: 16}
+  ufoSpawnIntervalRange: {x: 12, y: 20}
   ufoHoverHeight: 25
   ufoFormationSpread: 8
   ufoFollowSpeed: 10
   ufoVerticalSpeed: 12
   ufoAlignThreshold: 2.5
   ufoDiveDelay: 0.7
-  ufoDiveSpeed: 20
+  ufoDiveSpeed: 16
   ufoDiveTrackSpeed: 4
   ufoDiveDepthBelowShip: 15
   ufoDiveMaxDuration: 3
@@ -4901,7 +4901,7 @@ Transform:
   m_GameObject: {fileID: 1895874911}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 14.2, z: -20}
+  m_LocalPosition: {x: 0, y: 15.719999, z: -22}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4933,7 +4933,7 @@ MonoBehaviour:
     CustomLookAtTarget: 0
   Lens:
     FieldOfView: 60
-    OrthographicSize: 20
+    OrthographicSize: 22
     NearClipPlane: 0.3
     FarClipPlane: 1000
     Dutch: 0
@@ -4963,7 +4963,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 886251e9a18ece04ea8e61686c173e1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachinePositionComposer
-  CameraDistance: 20
+  CameraDistance: 22
   DeadZoneDepth: 0
   Composition:
     ScreenPosition: {x: 0, y: 0.38}
@@ -5300,7 +5300,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 20
+  orthographic size: 22
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -5463,7 +5463,7 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 23ada4949facf8c44b7dcc4be9172cde, type: 3}
     weight: 1
     minHeight: 200
-    maxHeight: 350
+    maxHeight: 400
     sizeRange: {x: 60, y: 65}
     maxAlive: 1
     parallax: 0.8
@@ -5889,6 +5889,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 6385650568661620482, guid: b88547eaebcf10941b0652f5e0925c0a, type: 3}
+      propertyPath: maxSpeed
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 6385650568661620482, guid: b88547eaebcf10941b0652f5e0925c0a, type: 3}
+      propertyPath: thrustForce
+      value: 1000
+      objectReference: {fileID: 0}
     - target: {fileID: 6686814153073213823, guid: b88547eaebcf10941b0652f5e0925c0a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -5928,6 +5936,14 @@ PrefabInstance:
     - target: {fileID: 6686814153073213823, guid: b88547eaebcf10941b0652f5e0925c0a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8757628044694115521, guid: b88547eaebcf10941b0652f5e0925c0a, type: 3}
+      propertyPath: ammo
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8757628044694115521, guid: b88547eaebcf10941b0652f5e0925c0a, type: 3}
+      propertyPath: maxAmmo
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 8757628044694115521, guid: b88547eaebcf10941b0652f5e0925c0a, type: 3}
       propertyPath: ammoCounter

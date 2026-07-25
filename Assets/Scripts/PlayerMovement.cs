@@ -9,7 +9,9 @@ public class PlayerMovement : MonoBehaviour
 
     public float fuelUseSpeed = 1f;
     public float turnSpeed;
-    public float moveSpeed;
+
+    [Tooltip("Thrust force applied while boosting. Higher = quicker acceleration and sharper maneuvering. Top speed is still capped by Max Speed")]
+    public float thrustForce = 20f;
 
     [Tooltip("Top speed in units per second. Set to 0 for no limit.")]
     public float maxSpeed = 30f;
@@ -162,7 +164,7 @@ public class PlayerMovement : MonoBehaviour
     void Move()
     {
         fuel = Mathf.Max(0, fuel - fuelUseSpeed * Time.fixedDeltaTime);
-        rigidbody.AddRelativeForce(Vector3.up * moveSpeed * Time.fixedDeltaTime, ForceMode.Acceleration);
+        rigidbody.AddRelativeForce(Vector3.up * thrustForce * Time.fixedDeltaTime, ForceMode.Acceleration);
     }
     void ApplyGravity()
     {

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8534540908203709329}
   - component: {fileID: 1749526198482868600}
   - component: {fileID: 2865955700408559510}
+  - component: {fileID: 663939962056236394}
   m_Layer: 0
   m_Name: DollarBill
   m_TagString: Powerup
@@ -114,6 +115,29 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -880490233366850828, guid: dc8e452eb585bc34392585390a3c66f1, type: 3}
+--- !u!136 &663939962056236394
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4330561143277583192}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 2.8
+  m_Height: 0
+  m_Direction: 0
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &9200692589341709106
 GameObject:
   m_ObjectHideFlags: 0

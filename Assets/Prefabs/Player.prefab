@@ -164,13 +164,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4511623513363101878}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -0, y: 3.2, z: -0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0, y: 2.667, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6686814153073213823}
-  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8757628044694115521
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -188,6 +188,9 @@ MonoBehaviour:
   bulletLifetime: 5
   bullet: {fileID: 438745838002832881, guid: 71d561b04778f6e4cab2eccf61126dce, type: 3}
   coolDown: 0.1
+  ammoCounter: {fileID: 0}
+  fireSound: {fileID: 8300000, guid: 7ff7862671809304a8ce59ad3cbbc401, type: 3}
+  fireVolume: 1
 --- !u!1 &5085834969333224904
 GameObject:
   m_ObjectHideFlags: 0
@@ -5092,6 +5095,8 @@ MonoBehaviour:
   wobbleSpeed: 4
   wobbleSpeedAtMaxSpeed: 5
   wobbleBlendSpeed: 5
+  boostSound: {fileID: 8300000, guid: fc9807721c2d6d44ca407b461e958f9b, type: 3}
+  boostVolume: 1
 --- !u!54 &2103196727290013038
 Rigidbody:
   m_ObjectHideFlags: 0

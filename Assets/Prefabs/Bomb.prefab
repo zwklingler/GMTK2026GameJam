@@ -72,6 +72,7 @@ GameObject:
   - component: {fileID: 7237909064796167039}
   - component: {fileID: 2591929408268994431}
   - component: {fileID: 8009442229848889565}
+  - component: {fileID: 8063557381989876009}
   m_Layer: 0
   m_Name: Bomb
   m_TagString: Powerup
@@ -88,7 +89,7 @@ Transform:
   m_GameObject: {fileID: 3043944407917350135}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
-  m_LocalPosition: {x: 0, y: -0, z: -1.75}
+  m_LocalPosition: {x: 0, y: -0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -174,3 +175,26 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -849867405023671905, guid: ad5e4c8d146b96647953646791219645, type: 3}
+--- !u!136 &8063557381989876009
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3043944407917350135}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 2.8
+  m_Height: 0
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0.5498246}

@@ -48,6 +48,12 @@ public class PowerupSpawner : MonoBehaviour
     [Tooltip("Spin speed for the powerup's rb")]
     [SerializeField] float powerupSpinSpeed = 60f;
 
+    [Tooltip("Glow prefab spawned behind each powerup")]
+    [SerializeField] GameObject glowPrefab;
+
+    [Tooltip("How far behind the powerup the glow sits")]
+    [SerializeField] float glowDepth = 0.3f;
+
     [Tooltip("Powerups range below ship for removing")]
     [SerializeField] float powerupDespawnDistanceBelowShip = 50f;
 
@@ -79,6 +85,7 @@ public class PowerupSpawner : MonoBehaviour
     class ActivePowerup
     {
         public GameObject gameObject;
+        public GameObject glow;
         public PowerupType type;
         public float value;
     }
@@ -105,7 +112,22 @@ public class PowerupSpawner : MonoBehaviour
             }
         }
 
+        UpdateGlows();
+
         Cull(shipPosition.y);
+    }
+
+    void UpdateGlows()
+    {
+        foreach(ActivePowerup powerup in activePowerups)
+        {
+            if(powerup.glow == null || powerup.gameObject == null)
+                continue;
+
+            Vector3 target = powerup.gameObject.transform.position;
+            target.z += glowDepth;
+            powerup.glow.transform.position = target;
+        }
     }
 
     public void ResetRun()
@@ -143,9 +165,18 @@ public class PowerupSpawner : MonoBehaviour
             body.angularDamping = 0f;
         }
 
+        GameObject glow = null;
+
+        if(glowPrefab != null)
+        {
+            Vector3 glowPosition = spawnPosition + Vector3.forward * glowDepth;
+            glow = Instantiate(glowPrefab, glowPosition, glowPrefab.transform.rotation);
+        }
+
         activePowerups.Add(new ActivePowerup
         {
             gameObject = powerup,
+            glow = glow,
             type = type,
             value = definition.value
         });
@@ -211,6 +242,9 @@ public class PowerupSpawner : MonoBehaviour
 
             Apply(powerup.type, powerup.value);
 
+            if(powerup.glow != null)
+                Destroy(powerup.glow);
+
             Destroy(powerup.gameObject);
             activePowerups.RemoveAt(i);
             return;
@@ -258,6 +292,9 @@ public class PowerupSpawner : MonoBehaviour
 
             if(powerup.gameObject.transform.position.y < shipHeight - powerupDespawnDistanceBelowShip)
             {
+                if(powerup.glow != null)
+                    Destroy(powerup.glow);
+
                 Destroy(powerup.gameObject);
                 activePowerups.RemoveAt(i);
             }
@@ -268,6 +305,9 @@ public class PowerupSpawner : MonoBehaviour
     {
         foreach(ActivePowerup powerup in activePowerups)
         {
+            if(powerup.glow != null)
+                Destroy(powerup.glow);
+
             if(powerup.gameObject != null)
                 Destroy(powerup.gameObject);
         }

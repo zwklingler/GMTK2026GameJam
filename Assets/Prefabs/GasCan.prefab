@@ -72,6 +72,7 @@ GameObject:
   - component: {fileID: 2053355966854456431}
   - component: {fileID: 615030805252285195}
   - component: {fileID: 6224546363981331186}
+  - component: {fileID: 6875993028933754492}
   m_Layer: 0
   m_Name: GasCan
   m_TagString: Powerup
@@ -174,3 +175,26 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 5730884998739244751, guid: 92903fc11651ec340a75f130632cb5fd, type: 3}
+--- !u!136 &6875993028933754492
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8672834417242945337}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 2.8
+  m_Height: 0
+  m_Direction: 1
+  m_Center: {x: 0.2207886, y: 0, z: 0.1670296}
